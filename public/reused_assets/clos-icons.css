@@ -1,0 +1,79 @@
+.credit-card-icon-white {
+    background-image: url('../images/creditcard-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.files-icon-white {
+    background-image: url('../images/filesicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.schedule-icon-white {
+    background-image: url('../images/scheduleicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.doublecheck-icon-white {
+    background-image: url('../images/doublecheckicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.save-icon-white {
+    background-image: url('../images/saveicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.refresh-icon-white {
+    background-image: url('../images/refreshicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.add-icon-white {
+    background-image: url('../images/addicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+}
+
+.add-icon-dark {
+    background-image: url('../images/addicon-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+}

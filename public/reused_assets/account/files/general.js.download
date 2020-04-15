@@ -1,0 +1,420 @@
+var loggedInWebUi = true;
+var sybaseChecked = false;
+var sybase_not_responding = "DM Server is not responding.  If this happens repeatedly, please notify support.";
+var response_not_formatted = "The api has returned an improperly formatted response.  It does not appear to be Json.  If this happens repeatedly, please notify support.";
+var two_hours_and_five = 7500000;
+var focusTimer = {
+    'counter': 0,
+    'hours': 0,
+    'minutes': 0,
+    'seconds': 0
+};
+var formattedTimer = "00:00";
+genAjaxTimeout = 60000;
+toastr.options = {"positionClass": "toast-bottom-right"}
+
+monthNames = {
+    1: "January",   2: "February",
+    3: "March",     4: "April",
+    5: "May",       6: "June",
+    7: "July",      8: "August",
+    9: "September", 10: "October",
+    11: "November", 12: "December"
+};
+
+monthShortNames = {
+    1: "Jan",        2: "Feb",
+    3: "Mar",        4: "Apr",
+    5: "May",        6: "Jun",
+    7: "Jul",        8: "Aug",
+    9: "Sep",       10: "Oct",
+    11: "Nov",      12: "Dec"
+};
+
+monthNamesObj = {
+    'full': monthNames,
+    'short': monthShortNames
+};
+
+dayNames = {
+    1: 'Sunday',    2: 'Monday',
+    3: 'Tuesday',   4: 'Wednesday',
+    5: 'Thursday',  6: 'Friday',
+    7: 'Saturday'
+};
+
+dayShortNames = {
+    1: 'Sun',       2: 'Mon',
+    3: 'Tue',       4: 'Wed',
+    5: 'Thu',       6: 'Fri',
+    7: 'Sat'
+};
+
+dayNamesObj = {
+    'full': dayNames,
+    'short': dayShortNames
+};
+
+isSybaseWorking();
+feedbackjs();
+loadLoginCheck();
+loadFocusTimer();
+
+// -----------------------------------------------------------------------------
+
+function loadLoginCheck() {
+    // Let the user know if they are not logged in.
+    window.setInterval(function(){
+        checkLoggedIn();
+    }, genAjaxTimeout);
+}
+
+//$(document).ready(function() {
+
+//});
+function loadFocusTimer() {
+    $focusTimerBox = $('.focus-timer-box');
+    if ($focusTimerBox.length > 0) {
+        $focusTimerBox.show();
+        $focusTimer = $focusTimerBox.find('.focus-timer');
+        $focusTimer.html(formattedTimer);
+        window.setInterval(function(){
+            if (document.hasFocus()) {
+                focusTimer.counter++;
+                if (focusTimer = {
+                        'counter': focusTimer.counter,
+                        'hours': ~~(focusTimer.counter / 3600),
+                        'minutes': ~~((focusTimer.counter % 3600) / 60),
+                        'seconds': focusTimer.counter % 60}) {
+                    if (focusTimer.seconds < 60 && focusTimer.minutes < 1) {
+                        formattedTimer = '00:' + numberPad(focusTimer.seconds, 2);
+                    } else if (focusTimer.minutes > 0 && focusTimer.hours < 1) {
+                        formattedTimer = numberPad(focusTimer.minutes, 2) + ":" + numberPad(focusTimer.seconds, 2);
+                    } else if (focusTimer.hours > 0) {
+                        formattedTimer = numberPad(focusTimer.hours, 2) + ":" + numberPad(focusTimer.minutes, 2) + ":" + numberPad(focusTimer.seconds, 2);
+                    }
+                    $focusTimer.html(formattedTimer);
+                }
+            }
+        }, 1000);
+    } else {
+        $focusTimerBox.hide();
+    }
+}
+
+function feedbackjs() {
+    $.feedback({
+        firstdtype: 'blackout',
+        ajaxURL: '/general/feedback',
+        html2canvasURL: '/themes/default/js/html2canvas.js',
+        onClose: function() { window.location.reload(); }
+    });
+}
+
+function isThisJson(something) {
+    try {
+        JSON.parse(something);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+// Redundant message.
+function reMsg(msg, type, duration) {
+    if ('undefined' == typeof(type)) { type = "info"; }
+    if ('undefined' == typeof(duration)) { duration = 5000; }
+    if ('object' == typeof(toastr)) {
+        toBefore = toastr.options.timeOut;
+        toastr.options.timeOut = duration;
+        typemsg(msg, type);
+        toastr.options.timeOut = toBefore;
+    } else {
+        alert("["+ type + "] " + msg);
+    }
+}
+
+function typemsg(msg, type) {
+    switch(type) {
+        case 'success': toastr.success(msg); break;
+        case 'warning': toastr.warning(msg); break;
+        case 'error':   toastr.error(msg); break;
+        case 'info':
+        default:        toastr.info(msg); break;
+    }
+}
+
+function loadingBar(amount) {
+    return '<div class="progress progress-striped active"><div class="bar" style="width: ' + amount + '%;"></div></div>';
+}
+
+function showLoadingDialog(extra) {
+    $loadingDialog = $(document).find('#loading-dialog');
+    if (extra != 'undefined' && extra != '') {
+        removeLoadDialogExtra();
+        $loadingDialog.find('.extra-stuff').html(extra);
+    }
+    if (typeof(showThisDialog) !== "undefined") {
+        showThisDialog($loadingDialog);
+    } else {
+        $thisDialogClone = $($loadingDialog).clone();
+        $thisDialogClone.dialog({
+            position:   {my: "center", at: "center"},
+            modal:      true,
+            width:      $(window).width() > 500 ? 500 : $(window).width() * 0.9,
+            minWidth:   300,
+            maxHeight:  $(window).height() * 0.9,
+            draggable:  true
+        });
+        $('.ui-dialog-titlebar-close').remove();
+    }
+
+}
+
+function removeLoadingDialog() {
+    $loadingDialog = $(document).find('.ui-dialog').find('#loading-dialog');
+    //$('.ui-widget-overlay').remove();
+    //$loadingDialog.remove();
+    $loadingDialog.dialog("close");
+    return true;
+}
+
+function removeLoadDialogExtra() {
+    $(document).find('.extra-stuff').html('');
+}
+
+function isSybaseWorking() {
+    // TODO: Parse error messages from server to get specific words.
+    if (false == sybaseChecked) {
+        sybaseChecked = true;
+        $.get("/polling/is_sybase_working", function( data ) {
+            if (false === data.online) {
+                reMsg(sybase_not_responding, two_hours_and_five);
+            }
+        });
+    }
+}
+
+function checkLoggedIn() {
+    return $.ajax({
+        type: "GET",
+        url: "/polling/logged_in_check",
+        timeout: genAjaxTimeout,
+        beforeSend: function(){
+            $('.toast').remove();
+        },
+        success: function(data) {
+            if (data === "false") {
+                showLoggedOutDialog();
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            showLoggedOutDialog();
+        }
+    });
+
+}
+
+function showLoggedOutDialog() {
+    loggedInWebUi = false;
+    toastr.options = {
+        "closeButton": false,
+        "debug": false,
+        "newestOnTop": false,
+        "progressBar": false,
+        //"positionClass": "toast-top-full-width logged-in-check-toastr",
+        "preventDuplicates": true,
+        "showDuration": "300",
+        "hideDuration": "1000",
+        "timeOut": 0,
+        "extendedTimeOut": 0,
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut",
+        "tapToDismiss": false
+    };
+    toastr.warning(
+        "<div style=\"max-width: 500px; margin: 0 auto; text-align: center; width: 100%;\">" +
+        "   <h6>You appear to be signed out.</h6>" +
+        "   <h6>You can try to sign back in by<br>clicking the button below.</h6>" +
+        "   <h6>You can also simply refresh the page.</h6>" +
+        "   <div style=\"margin: 0 auto; text-align: center; width: 100%;\">" +
+        "       <a href=\"/login\" type=\"button\" class=\"btn btn-info clear\">Click this button to sign back in.</a>" +
+        "   </div>",
+        "</div>",
+        "Authentication Status"
+    );
+    $('.toast-warning').css('background', '#FFFFFF');
+    $('.toast-warning').css('color', '#000000');
+    $('.toast-warning').css('padding', '15px');
+    $('.toast-warning').css('box-shadow', '0 4px 16px rgba(0, 0, 0, 0.2)');
+    $('.toast-warning').css('border-radius', '0px');
+}
+
+function setButtonStatusText($buttonObject, status, text) {
+    if ('disabled' == status) {
+        $buttonObject.attr('disabled', 'disabled');
+        $buttonObject.addClass('disabled');
+    } else {
+        $buttonObject.removeAttr("disabled");
+        $buttonObject.removeClass('disabled');
+    }
+    //$buttonObject.prop('disabled', ('enabled' === status) ? false : true);
+    if (text != 'undefined' && text != '') {
+        $buttonObject.html(text);
+    }
+}
+
+function isButtonDisabled($buttonObject) {
+    if (true === $buttonObject.is(':disabled')) {
+        return true;
+    }
+    if ($buttonObject.hasClass('disabled')) {
+        return true;
+    }
+    return false;
+}
+
+/*function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}*/
+
+// https://web.archive.org/web/20150923060237/http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+function getURLParameters(url){
+    var result = {};
+    var searchIndex = url.indexOf("?");
+    if (searchIndex == -1 ) return result;
+    var sPageURL = url.substring(searchIndex +1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++) {
+        var sParameterName = sURLVariables[i].split('=');
+        result[sParameterName[0]] = sParameterName[1];
+    }
+    return result;
+}
+
+function americanCurrency(val) {
+    return "$" + commaSeparateNumber((val.replace(/\D/g,'') / 100).toFixed(2));
+}
+
+function commaSeparateNumber(val){
+    while (/(\d+)(\d{3})/.test(val.toString())){
+        val = val.toString().replace(/(\d+)(\d{3})/, '$1'+','+'$2');
+    }
+    return val;
+}
+
+function getObjectSize(object) {
+    var size = 0, key;
+    for (key in object) {
+        if (object.hasOwnProperty(key)) size++;
+    }
+    return size;
+}
+
+function textAreaAdjust(o) {
+    o.style.height = "1px";
+    o.style.height = (25+o.scrollHeight)+"px";
+}
+
+// https://stackoverflow.com/a/2998822
+function numberPad(number, paddingSize) {
+    var returnNumber = "" + number + "";
+    while (returnNumber.length < paddingSize)  {
+        returnNumber = "0" + returnNumber;
+    }
+    return returnNumber;
+}
+
+function unixtimeNow() {
+    return Math.floor(Date.now() / 1000);
+}
+
+// https://web.archive.org/save/https://stackoverflow.com/questions/6215779/scroll-if-element-is-not-visible/31597986#31597986
+function scrollToView(element, parent) {
+    element = $(element);
+    parent = $(parent);
+
+    if (element.length > 0 && parent.length > 0) {
+        var offset = element.offset().top + parent.scrollTop();
+
+        var height = element.innerHeight();
+        var offset_end = offset + height;
+        if (!element.is(":visible")) {
+            element.css({"visibility":"hidden"}).show();
+            var offset = element.offset().top;
+            element.css({"visibility":"", "display":""});
+        }
+
+        var visible_area_start = parent.scrollTop();
+        var visible_area_end = visible_area_start + parent.innerHeight();
+
+        if (offset-height < visible_area_start) {
+            parent.animate({scrollTop: offset-height}, 600);
+            return false;
+        } else if (offset_end > visible_area_end) {
+            parent.animate({scrollTop: parent.scrollTop()+ offset_end - visible_area_end }, 600);
+            return false;
+
+        }
+    }
+
+
+    return true;
+}
+
+$.fn.simulateClick = function() {
+    return this.each(function() {
+        if('createEvent' in document) {
+            var doc = this.ownerDocument,
+                evt = doc.createEvent('MouseEvents');
+            evt.initMouseEvent('click', true, true, doc.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+            this.dispatchEvent(evt);
+        } else {
+            this.click(); // IE
+        }
+    });
+}
+
+// http://stackoverflow.com/a/3955096
+if (!Array.prototype.remove) {
+    Array.prototype.remove = function(value) {
+        var idx = this.indexOf(value);
+        console.log(idx);
+        if (idx != -1) {
+            return this.splice(idx, 1); // The second parameter is the number of elements to remove.
+        }
+        return false;
+    }
+} else {
+    reMsg('There is a specific issue with the javascript on this page.  Tell support.', 'warning');
+}
+
+function isNumber(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+// See if something is off screen.
+// $('div').is(':offscreen');
+jQuery.expr.filters.offscreen = function(el) {
+    var rect = el.getBoundingClientRect();
+    return (
+        (rect.x + rect.width) < 0
+        || (rect.y + rect.height) < 0
+        || (rect.x > window.innerWidth || rect.y > window.innerHeight)
+    );
+};

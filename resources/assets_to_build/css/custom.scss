@@ -1,0 +1,32 @@
+.content_menu .active{
+  padding:5px;
+  background-color: #9fc5f8;
+  color:#4381e5;
+}
+.active a:link {
+  color: #2c84e9;
+}
+.content_menu ul{
+  margin-left:5px;
+}
+
+#row-container:nth-child(2n+3) {background: #CCC}
+
+#row-container:first-child {
+  background-color: #CCC;
+}
+
+.grayed-out a{
+color: #d0d0d0;
+}
+
+.custom-request-button{
+background-color:#fff;
+color:#3c6ce6;
+border:0;
+border:none;
+}
+
+body{
+
+}

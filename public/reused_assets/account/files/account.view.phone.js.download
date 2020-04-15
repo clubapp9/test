@@ -1,0 +1,92 @@
+$(document).ready(function() {
+
+    $(document).on('click', '.phone-number-edit-button', function(){
+
+        $moreInfoPhone = $(this).parent().find('.more-info-phone');
+        let obj = {
+            'debt_id': $('#account_id').val(),
+            'item_no': $moreInfoPhone.find('.item-no').val(),
+            'phone_number': $moreInfoPhone.find('.phone-number').val(),
+            'description': $moreInfoPhone.find('.description').val(),
+            'status': $moreInfoPhone.find('.status').val()
+        };
+
+        handlebarsRender("#edit-phone-number-template", ".edit-phone-number-box", obj);
+
+        $("#edit-phone-number-dialog").dialog({
+            modal: true,
+            position: ['center', 'center'],
+            width: '300',
+            dialogClass: 'edit-phone-number-modal-dialog',
+            closeOnEscape: true,
+            buttons: [
+                {
+                    text: "Save",
+                    "class": 'add-phone-save-button',
+                    click: function(){
+                        saveEditPhoneForm(obj, $(this));
+                    }
+                },
+                {
+                    text: "Close",
+                    click: function(){
+                        $(this).dialog( "close" );
+                    }
+                }
+            ],
+            open: function(){
+                $(this).closest('.ui-dialog').find('.ui-dialog-buttonset button').addClass('btn-clos-green btn-clos-small');
+                $(document).find('.edit-phone-number-modal-dialog').keypress(function(e) {
+                    if (e.keyCode == $.ui.keyCode.ENTER) {
+                        $(document).find('.edit-phone-number-modal-dialog').find(".add-phone-save-button").click();
+                    }
+                });
+                setTimeout(function(){
+                    $(document).find('.split-select').focus();
+                }, 100);
+
+            }
+        });
+
+    });
+
+});
+
+function saveEditPhoneForm(obj, $thisDialog) {
+    ajaxData = {
+        'debt_id': $('#account_id').val(),
+        'item_no': obj.item_no,
+        'phone_number': $thisDialog.find('input[name=phone]').val(),
+        'description': $thisDialog.find('input[name=descr]').val(),
+        'status': $thisDialog.find('input[name=status]').val(),
+        'ci_csrf_token':  $csrf
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/collector_api/post/update_account/phone",
+        timeout: 20000,
+        data: ajaxData,
+        beforeSend: function(){
+            showLoadingDialog();
+        },
+        success: function(data) {
+            if (data.success === true) {
+                toastr.success(data.message);
+                $thisDialog.dialog('close');
+                reloadPage();
+            } else {
+                toastr.error(data.message);
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            toastr.options.timeOut = false;
+            toastr.error("An API error has occurred saving the note to the account.");
+            console.log({'apiError': {'xhr': xhr, 'ajaxSetting': ajaxSetting, 'thrownError': thrownError}});
+            removeLoadingDialog();
+        },
+        complete: function(){
+            removeLoadingDialog();
+        }
+    });
+}

@@ -1,0 +1,174 @@
+/*
+ This is the time zone area code API. I think it might make sense
+ to make it a seperate file, but I'd like to discuss that decision with y'all later.
+
+ App takes a phone number, parses the area code, and returns the timezone offset for the associated zipcodes
+
+ One obvious limitation is the border areas. Per Jake's instructions, we're defaulting to the later time if
+ an area code is split between two timezones.
+
+ areaCodeString is a json string I compiled from the CSV the npa releases with all area codes.
+ I filtered out area codes that were never used.
+ */
+
+function areaCodeToAreaCodeStruct (areaCode) {
+    var areaCodeString = '{"201":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"202":{"LOCATION":"dc","COUNTRY":"us","TIME_ZONE":"e"},"203":{"LOCATION":"ct","COUNTRY":"us","TIME_ZONE":"e"},"204":{"LOCATION":"manitoba","COUNTRY":"canada","TIME_ZONE":"c"},"205":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"206":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"207":{"LOCATION":"me","COUNTRY":"us","TIME_ZONE":"e"},"208":{"LOCATION":"id","COUNTRY":"us","TIME_ZONE":"mp"},"209":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"210":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"212":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"213":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"214":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"215":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"216":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"217":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"218":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"219":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"ec"},"220":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"223":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"224":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"225":{"LOCATION":"la","COUNTRY":"us","TIME_ZONE":"c"},"226":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"227":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"228":{"LOCATION":"ms","COUNTRY":"us","TIME_ZONE":"c"},"229":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"231":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"234":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"236":{"LOCATION":"britishcolumbia","COUNTRY":"canada","TIME_ZONE":"p"},"239":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"240":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"242":{"LOCATION":"bahamas","COUNTRY":"bahamas","TIME_ZONE":"e"},"246":{"LOCATION":"barbados","COUNTRY":"barbados","TIME_ZONE":"a"},"248":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"249":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"250":{"LOCATION":"britishcolumbia","COUNTRY":"canada","TIME_ZONE":"p"},"251":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"252":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"253":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"254":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"256":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"257":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"260":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"e"},"262":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"263":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"264":{"LOCATION":"anguilla","COUNTRY":"anguilla","TIME_ZONE":"a"},"267":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"268":{"LOCATION":"antigua/barbuda","COUNTRY":"antigua/barbuda","TIME_ZONE":"a"},"269":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"270":{"LOCATION":"ky","COUNTRY":"us","TIME_ZONE":"ec"},"272":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"273":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"274":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"276":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"279":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"281":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"283":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"284":{"LOCATION":"britishvirginislands","COUNTRY":"britishvirginislands","TIME_ZONE":"a"},"289":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"301":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"302":{"LOCATION":"de","COUNTRY":"us","TIME_ZONE":"e"},"303":{"LOCATION":"co","COUNTRY":"us","TIME_ZONE":"m"},"304":{"LOCATION":"wv","COUNTRY":"us","TIME_ZONE":"e"},"305":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"306":{"LOCATION":"saskatchewan","COUNTRY":"canada","TIME_ZONE":"c"},"307":{"LOCATION":"wy","COUNTRY":"us","TIME_ZONE":"m"},"308":{"LOCATION":"ne","COUNTRY":"us","TIME_ZONE":"cm"},"309":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"310":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"312":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"313":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"314":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"315":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"316":{"LOCATION":"ks","COUNTRY":"us","TIME_ZONE":"c"},"317":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"e"},"318":{"LOCATION":"la","COUNTRY":"us","TIME_ZONE":"c"},"319":{"LOCATION":"ia","COUNTRY":"us","TIME_ZONE":"c"},"320":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"321":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"323":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"325":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"327":{"LOCATION":"ar","COUNTRY":"us","TIME_ZONE":"c"},"330":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"331":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"332":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"334":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"336":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"337":{"LOCATION":"la","COUNTRY":"us","TIME_ZONE":"c"},"339":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"340":{"LOCATION":"usvi","COUNTRY":"us","TIME_ZONE":"a"},"341":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"343":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":""},"345":{"LOCATION":"caymanislands","COUNTRY":"caymanislands","TIME_ZONE":"e"},"346":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"347":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"351":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"352":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"353":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"354":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"360":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"361":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"364":{"LOCATION":"ky","COUNTRY":"us","TIME_ZONE":"ec"},"365":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"367":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"368":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"369":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"380":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"382":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"385":{"LOCATION":"ut","COUNTRY":"us","TIME_ZONE":"m"},"386":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"387":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"401":{"LOCATION":"ri","COUNTRY":"us","TIME_ZONE":"e"},"402":{"LOCATION":"ne","COUNTRY":"us","TIME_ZONE":"c"},"403":{"LOCATION":"alberta","COUNTRY":"canada","TIME_ZONE":"m"},"404":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"405":{"LOCATION":"ok","COUNTRY":"us","TIME_ZONE":"c"},"406":{"LOCATION":"mt","COUNTRY":"us","TIME_ZONE":"m"},"407":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"408":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"409":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"410":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"412":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"413":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"414":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"415":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"416":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"417":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"418":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"419":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"423":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"ec"},"424":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"425":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"428":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"430":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"431":{"LOCATION":"manitoba","COUNTRY":"canada","TIME_ZONE":""},"432":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"434":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"435":{"LOCATION":"ut","COUNTRY":"us","TIME_ZONE":"m"},"437":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"438":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"440":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"441":{"LOCATION":"bermuda","COUNTRY":"bermuda","TIME_ZONE":"a"},"442":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"443":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"445":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"447":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"450":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"456":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"458":{"LOCATION":"or","COUNTRY":"us","TIME_ZONE":"mp"},"460":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"463":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"e"},"464":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"468":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"469":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"470":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"473":{"LOCATION":"grenada","COUNTRY":"grenada","TIME_ZONE":"a"},"474":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"475":{"LOCATION":"ct","COUNTRY":"us","TIME_ZONE":"e"},"478":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"479":{"LOCATION":"ar","COUNTRY":"us","TIME_ZONE":"c"},"480":{"LOCATION":"az","COUNTRY":"us","TIME_ZONE":"m"},"484":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"487":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"500":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"501":{"LOCATION":"ar","COUNTRY":"us","TIME_ZONE":"c"},"502":{"LOCATION":"ky","COUNTRY":"us","TIME_ZONE":"e"},"503":{"LOCATION":"or","COUNTRY":"us","TIME_ZONE":"p"},"504":{"LOCATION":"la","COUNTRY":"us","TIME_ZONE":"c"},"505":{"LOCATION":"nm","COUNTRY":"us","TIME_ZONE":"m"},"506":{"LOCATION":"newbrunswick","COUNTRY":"canada","TIME_ZONE":"a"},"507":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"508":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"509":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"510":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"512":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"513":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"514":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"515":{"LOCATION":"ia","COUNTRY":"us","TIME_ZONE":"c"},"516":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"517":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"518":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"519":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"520":{"LOCATION":"az","COUNTRY":"us","TIME_ZONE":"m"},"521":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"522":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"523":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"524":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"525":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"526":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"527":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"528":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"529":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"530":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"531":{"LOCATION":"ne","COUNTRY":"us","TIME_ZONE":"c"},"532":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"533":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"534":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"535":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"537":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"538":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"539":{"LOCATION":"ok","COUNTRY":"us","TIME_ZONE":"c"},"540":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"541":{"LOCATION":"or","COUNTRY":"us","TIME_ZONE":"mp"},"542":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"543":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"544":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"545":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"546":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"547":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"548":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"549":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"550":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"551":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"552":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"553":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"554":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"556":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"557":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"558":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"559":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"561":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"562":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"563":{"LOCATION":"ia","COUNTRY":"us","TIME_ZONE":"c"},"564":{"LOCATION":"wa","COUNTRY":"us","TIME_ZONE":"p"},"566":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"567":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"568":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"569":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"570":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"571":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"573":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"574":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"ec"},"575":{"LOCATION":"nm","COUNTRY":"us","TIME_ZONE":"m"},"577":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"578":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":""},"579":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"580":{"LOCATION":"ok","COUNTRY":"us","TIME_ZONE":"c"},"581":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"582":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"584":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"585":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"586":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"587":{"LOCATION":"alberta","COUNTRY":"canada","TIME_ZONE":"m"},"588":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"600":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":"e"},"601":{"LOCATION":"ms","COUNTRY":"us","TIME_ZONE":"c"},"602":{"LOCATION":"az","COUNTRY":"us","TIME_ZONE":"m"},"603":{"LOCATION":"nh","COUNTRY":"us","TIME_ZONE":"e"},"604":{"LOCATION":"britishcolumbia","COUNTRY":"canada","TIME_ZONE":"p"},"605":{"LOCATION":"sd","COUNTRY":"us","TIME_ZONE":"cm"},"606":{"LOCATION":"ky","COUNTRY":"us","TIME_ZONE":"ec"},"607":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"608":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"609":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"610":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"612":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"613":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"614":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"615":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"c"},"616":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"617":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"618":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"619":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"620":{"LOCATION":"ks","COUNTRY":"us","TIME_ZONE":"cm"},"622":{"LOCATION":"canada","COUNTRY":"canada","TIME_ZONE":"e"},"623":{"LOCATION":"az","COUNTRY":"us","TIME_ZONE":"m"},"626":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"627":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"628":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"629":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"c"},"630":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"631":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"636":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"639":{"LOCATION":"saskatchewan","COUNTRY":"canada","TIME_ZONE":"c"},"640":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"641":{"LOCATION":"ia","COUNTRY":"us","TIME_ZONE":"c"},"646":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"647":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"649":{"LOCATION":"turks&caicosislands","COUNTRY":"turks&caicosislands","TIME_ZONE":"e"},"650":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"651":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"657":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"658":{"LOCATION":"jamaica","COUNTRY":"jamaica","TIME_ZONE":""},"659":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"660":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"661":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"662":{"LOCATION":"ms","COUNTRY":"us","TIME_ZONE":"c"},"664":{"LOCATION":"montserrat","COUNTRY":"montserrat","TIME_ZONE":"a"},"667":{"LOCATION":"md","COUNTRY":"us","TIME_ZONE":"e"},"669":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"670":{"LOCATION":"cnmi","COUNTRY":"us","TIME_ZONE":"(utc+10)"},"671":{"LOCATION":"gu","COUNTRY":"us","TIME_ZONE":"(utc+10)"},"672":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"678":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"679":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"680":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"681":{"LOCATION":"wv","COUNTRY":"us","TIME_ZONE":"e"},"682":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"683":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"684":{"LOCATION":"as","COUNTRY":"us","TIME_ZONE":""},"689":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"700":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"701":{"LOCATION":"nd","COUNTRY":"us","TIME_ZONE":"cm"},"702":{"LOCATION":"nv","COUNTRY":"us","TIME_ZONE":"p"},"703":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"704":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"705":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"706":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"707":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"708":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"709":{"LOCATION":"newfoundlandandlabrador","COUNTRY":"canada","TIME_ZONE":"na"},"710":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":"e"},"712":{"LOCATION":"ia","COUNTRY":"us","TIME_ZONE":"c"},"713":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"714":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"715":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"716":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"717":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"718":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"719":{"LOCATION":"co","COUNTRY":"us","TIME_ZONE":"m"},"720":{"LOCATION":"co","COUNTRY":"us","TIME_ZONE":"m"},"721":{"LOCATION":"sintmaarten","COUNTRY":"sintmaarten","TIME_ZONE":"a"},"724":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"725":{"LOCATION":"nv","COUNTRY":"us","TIME_ZONE":"p"},"726":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"727":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"730":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"731":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"c"},"732":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"734":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"737":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"740":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"742":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"743":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"747":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"753":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"754":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"757":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"758":{"LOCATION":"st.lucia","COUNTRY":"st.lucia","TIME_ZONE":"a"},"760":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"762":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"763":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"764":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"765":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"e"},"767":{"LOCATION":"dominica","COUNTRY":"dominica","TIME_ZONE":"a"},"769":{"LOCATION":"ms","COUNTRY":"us","TIME_ZONE":"c"},"770":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"772":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"773":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"774":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"775":{"LOCATION":"nv","COUNTRY":"us","TIME_ZONE":"p"},"778":{"LOCATION":"britishcolumbia","COUNTRY":"canada","TIME_ZONE":"p"},"779":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"780":{"LOCATION":"alberta","COUNTRY":"canada","TIME_ZONE":"m"},"781":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"782":{"LOCATION":"novascotia-princeedwardisland","COUNTRY":"canada","TIME_ZONE":"a"},"784":{"LOCATION":"st.vincent&grenadines","COUNTRY":"st.vincent&grenadines","TIME_ZONE":"a"},"785":{"LOCATION":"ks","COUNTRY":"us","TIME_ZONE":"cm"},"786":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"787":{"LOCATION":"puertorico","COUNTRY":"us","TIME_ZONE":"a"},"800":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"801":{"LOCATION":"ut","COUNTRY":"us","TIME_ZONE":"m"},"802":{"LOCATION":"vt","COUNTRY":"us","TIME_ZONE":"e"},"803":{"LOCATION":"sc","COUNTRY":"us","TIME_ZONE":"e"},"804":{"LOCATION":"va","COUNTRY":"us","TIME_ZONE":"e"},"805":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"806":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"807":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"ec"},"808":{"LOCATION":"hi","COUNTRY":"us","TIME_ZONE":"(utc-10)"},"809":{"LOCATION":"dominicanrepublic","COUNTRY":"dominicanrepublic","TIME_ZONE":"e"},"810":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"812":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"ec"},"813":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"814":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"815":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"816":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"817":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"818":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"819":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"820":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"822":{"LOCATION":"","COUNTRY":"","TIME_ZONE":"e"},"825":{"LOCATION":"alberta","COUNTRY":"canada","TIME_ZONE":"m"},"828":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"829":{"LOCATION":"dominicanrepublic","COUNTRY":"dominicanrepublic","TIME_ZONE":"e"},"830":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"831":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"832":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"833":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"835":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"838":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"843":{"LOCATION":"sc","COUNTRY":"us","TIME_ZONE":"e"},"844":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"845":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"847":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"848":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"849":{"LOCATION":"dominicanrepublic","COUNTRY":"dominicanrepublic","TIME_ZONE":"e"},"850":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"ec"},"851":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"854":{"LOCATION":"sc","COUNTRY":"us","TIME_ZONE":"e"},"855":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"856":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"857":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"858":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"859":{"LOCATION":"ky","COUNTRY":"us","TIME_ZONE":"e"},"860":{"LOCATION":"ct","COUNTRY":"us","TIME_ZONE":"e"},"862":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"863":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"864":{"LOCATION":"sc","COUNTRY":"us","TIME_ZONE":"e"},"865":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"e"},"866":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"867":{"LOCATION":"yukon-nwterr.-nunavut","COUNTRY":"canada","TIME_ZONE":"cmp"},"868":{"LOCATION":"trinidad&tobago","COUNTRY":"trinidadandtobago","TIME_ZONE":"a"},"869":{"LOCATION":"st.kitts&nevis","COUNTRY":"st.kittsandnevis","TIME_ZONE":"a"},"870":{"LOCATION":"ar","COUNTRY":"us","TIME_ZONE":"c"},"871":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"872":{"LOCATION":"il","COUNTRY":"us","TIME_ZONE":"c"},"873":{"LOCATION":"quebec","COUNTRY":"canada","TIME_ZONE":"e"},"876":{"LOCATION":"jamaica","COUNTRY":"jamaica","TIME_ZONE":"e"},"877":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"878":{"LOCATION":"pa","COUNTRY":"us","TIME_ZONE":"e"},"879":{"LOCATION":"newfoundlandandlabrador","COUNTRY":"canada","TIME_ZONE":"na"},"888":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"900":{"LOCATION":"nanparea","COUNTRY":"","TIME_ZONE":"e"},"901":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"c"},"902":{"LOCATION":"novascotia-princeedwardisland","COUNTRY":"canada","TIME_ZONE":"a"},"903":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"904":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"905":{"LOCATION":"ontario","COUNTRY":"canada","TIME_ZONE":"e"},"906":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"ec"},"907":{"LOCATION":"ak","COUNTRY":"us","TIME_ZONE":"(utc-9)"},"908":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"909":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"910":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"912":{"LOCATION":"ga","COUNTRY":"us","TIME_ZONE":"e"},"913":{"LOCATION":"ks","COUNTRY":"us","TIME_ZONE":"c"},"914":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"915":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"cm"},"916":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"917":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"918":{"LOCATION":"ok","COUNTRY":"us","TIME_ZONE":"c"},"919":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"920":{"LOCATION":"wi","COUNTRY":"us","TIME_ZONE":"c"},"925":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"928":{"LOCATION":"az","COUNTRY":"us","TIME_ZONE":"m"},"929":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"930":{"LOCATION":"in","COUNTRY":"us","TIME_ZONE":"e"},"931":{"LOCATION":"tn","COUNTRY":"us","TIME_ZONE":"ec"},"934":{"LOCATION":"ny","COUNTRY":"us","TIME_ZONE":"e"},"935":{"LOCATION":"","COUNTRY":"us","TIME_ZONE":""},"936":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"937":{"LOCATION":"oh","COUNTRY":"us","TIME_ZONE":"e"},"938":{"LOCATION":"al","COUNTRY":"us","TIME_ZONE":"c"},"939":{"LOCATION":"puertorico","COUNTRY":"us","TIME_ZONE":"a"},"940":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"941":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"942":{"LOCATION":"","COUNTRY":"canada","TIME_ZONE":""},"947":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"},"949":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"951":{"LOCATION":"ca","COUNTRY":"us","TIME_ZONE":"p"},"952":{"LOCATION":"mn","COUNTRY":"us","TIME_ZONE":"c"},"954":{"LOCATION":"fl","COUNTRY":"us","TIME_ZONE":"e"},"956":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"959":{"LOCATION":"ct","COUNTRY":"us","TIME_ZONE":"e"},"970":{"LOCATION":"co","COUNTRY":"us","TIME_ZONE":"m"},"971":{"LOCATION":"or","COUNTRY":"us","TIME_ZONE":"p"},"972":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"973":{"LOCATION":"nj","COUNTRY":"us","TIME_ZONE":"e"},"975":{"LOCATION":"mo","COUNTRY":"us","TIME_ZONE":"c"},"978":{"LOCATION":"ma","COUNTRY":"us","TIME_ZONE":"e"},"979":{"LOCATION":"tx","COUNTRY":"us","TIME_ZONE":"c"},"980":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"984":{"LOCATION":"nc","COUNTRY":"us","TIME_ZONE":"e"},"985":{"LOCATION":"la","COUNTRY":"us","TIME_ZONE":"c"},"986":{"LOCATION":"id","COUNTRY":"us","TIME_ZONE":"p"},"989":{"LOCATION":"mi","COUNTRY":"us","TIME_ZONE":"e"}}';
+    var parsedAreaCodes = JSON.parse(areaCodeString);
+
+    /*time_zones = new Array;
+    for (var x = 0; x < getObjectSize(parsedAreaCodes); x++) {
+        if (typeof parsedAreaCodes[x] != "undefined") {
+            time_zones.push(parsedAreaCodes[x].TIME_ZONE);
+        }
+    }
+    time_zones = Array.from(new Set(time_zones));
+    console.log(time_zones);
+    console.dir(parsedAreaCodes);*/
+
+    return parsedAreaCodes[areaCode];
+}
+
+
+/*
+ If AZ, it returns 0. Otherwise, checks if it's within the daylight savings window of months.
+ If it's on the border months, it checks if it's wihin the day range.
+ If it passes one of those checks, returns 1 which is deducted from the UTC offset in the calling function.
+ Technically this is off for 4 hours a year. If someone wants to build in the time check for 2am, god bless them.
+ */
+
+function checkIfDST(location) {
+    if (!(location == "az") && !(location == "hi")) {
+        var date = new Date();
+        var month = date.getMonth();
+        if (month > 2 && month < 10) {
+            return 1;
+        } else if (month == 2 && isAfterThisSunday(date, 2)) {
+            return 1;
+        }else if (month == 10 && !(isAfterThisSunday(date, 1))) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/*
+ DST runs from the 2 Sunday in March to the 1st in November
+ This doesn't actually work on check the sunday.
+ */
+
+function isAfterThisSunday(date, whichSunday) {
+    var thisDay = date.getDate();
+    var theEighth = date;
+    theEighth.setDate((theEighth.getDate() - (theEighth.getDate() - (whichSunday * 7)))-1);
+    return thisDay >= theEighth.getDate();
+}
+
+/*
+ Takes the timezone field from the NPA data, returns UTC offset in seconds.
+
+ It first handles irregular or combined timezones.
+
+ For split area codes (e.g the western border of Indian shares ACs with parts of eastern Illinois)
+ it defaults to the later or easternmost time. The NPA JSON provides shared tz in
+ the format "primaryTimeZoneInitial<secondaryTimezoneIntital>".
+
+ Assigns an offset based on standard time. DST is handled elsewhere.
+ */
+
+function timeZoneUTCOffset(timeZone) {
+    //Accepts a timezone as an argument. Timezones are given either in one-letter form or as a utc offset. In the case where an
+    //area code spans two timezones, extract the first letter given because it's the later of the two.
+    offset = 0;
+    //First checks to see if
+    if(timeZone.indexOf('utc-9') > -1) {
+        offset = 9;
+    } else if (timeZone.indexOf('utc-10') > -1) {
+        offset = 10;
+    } else if (timeZone.indexOf('utc+10') > -1) {
+        offset = -10;
+    } else {
+        switch(timeZone.length) {
+            case 1:
+                //If it's already one letter, it's just passed as is
+                break;
+            default:
+                //If area code spans two timezones, default to the later of the two
+                timeZone = timeZone.slice(0,1);
+                break;
+        }
+        //These are the standard time GMT offsets for these timezones
+        switch (timeZone) {
+            case 'a':
+                offset = 4;
+                break;
+            case 'e':
+                offset = 5;
+                break;
+            case 'c':
+                offset = 6;
+                break;
+            case 'm':
+                offset = 7;
+                break;
+            case 'p':
+                offset = 8;
+                break;
+        }
+    }
+    return offset * 60;
+}
+
+//takes a date and a number of minutes to add to that date. returns the resulting date.
+
+function addMinutes(date, numMinsToAdd) {
+    date.setMinutes(date.getMinutes() + numMinsToAdd);
+    return date;
+}
+
+function getAreaCodeFromNumber(phoneNumber) {
+    //Takes a phone number of varying formats, returns the area code.
+    //Cleans non-digit characters from input phone
+    var cleanPhone = phoneNumber.replace(/\D/g, "");
+    //Slice the area code as the first three of the final ten digits of whatever number is provided
+    var areaCode = cleanPhone.slice((cleanPhone.length - 10),(cleanPhone.length - 7));
+    return areaCode;
+}
+
+
+function returnCurrentAreaTime(areaCode) {
+    var timeOffset = areaCodeToCurrentTime(areaCode);
+    return addMinutes(new Date(), timeOffset).toLocaleTimeString();
+}
+
+//This is the primary function of the whole thing
+function areaCodeToCurrentTime (areaCode) {
+    if (areaCode.length == 3) {
+        //load area code data from json file.
+        //console.dir(parsedAreaCodes);
+        var acData = areaCodeToAreaCodeStruct(areaCode);
+        //Get the offset for this location
+        var hereOffset = new Date().getTimezoneOffset();
+        /*
+         create there offset by taking the offset (returned by function) for that timezone in
+         GMT time and adjusting for dst if necessary. It's a
+         little more complicated this way, but what do you expect from
+         the state that gave us John McCain, and Dan Quayle's disappointing son?
+         */
+        if (!(typeof(acData) === "undefined")) {
+            var thereOffset = timeZoneUTCOffset(acData.TIME_ZONE) - (60 * checkIfDST(acData.LOCATION));
+            //Simply find the difference in the timezones
+            return currentThere = addMinutes(new Date(), (hereOffset - thereOffset)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } else {
+            return 'Local Time Unavailable';
+        }
+    } else {
+        return 'No Area Code';
+    }
+
+
+}
+
+function getLocalTimeFromPhone (phoneNumber) {
+    var areaCode = getAreaCodeFromNumber(phoneNumber);
+    return areaCodeToCurrentTime(areaCode);
+}

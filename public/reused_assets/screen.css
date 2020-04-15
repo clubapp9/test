@@ -1,0 +1,623 @@
+@font-face {
+    font-family: 'Lato';
+    src: url('fonts/Lato/lato-regular.eot');
+    src: url('fonts/Lato/lato-regular.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Lato/lato-regular.woff2') format('woff2'),
+    url('fonts/Lato/lato-regular.woff') format('woff'),
+    url('fonts/Lato/lato-regular.ttf') format('truetype'),
+    url('fonts/Lato/lato-regular.svg#latoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'LatoLight';
+    src: url('fonts/Lato/lato-light.eot');
+    src: url('fonts/Lato/lato-light.eot?#iefix') format('embedded-opentype'),
+    url('fonts/Lato/lato-light.woff2') format('woff2'),
+    url('fonts/Lato/lato-light.woff') format('woff'),
+    url('fonts/Lato/lato-light.ttf') format('truetype'),
+    url('onts/Lato/lato-light.svg#latolight') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: "Lato", "Helvetica", "Arial", sans-serif;
+    height: 100%;
+}
+
+.background-management-button-box {
+    width: 100%;
+    display: inline-block;
+    text-align: center;
+}
+
+.background-management-button {
+    position: relative;
+}
+
+.background-pattern {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAI0lEQVQImWN4/+79//fv3v+/f/f+//t37/9nwBCAMWASGAIA2bE7KUhHY50AAAAASUVORK5CYII=);
+}
+
+.background-pattern-dark {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAEklEQVQImWMIDQ39j44ZaCAIAB7XMc8qt33gAAAAAElFTkSuQmCC);
+}
+
+.jumbotron {
+    text-align: center;
+    margin: 60px 0;
+}
+.jumbotron h1 {
+    font-size: 72px;
+    line-height: 1;
+}
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+
+.space-50 {
+    width: 50%;
+}
+
+.space-100 {
+    width: 100%;
+}
+
+.clos-logo {
+    background-image: url('images/CLOSlogo.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: auto;
+    height: 129px;
+}
+
+.webui-logo-header .clos-logo {
+    height: 82px;
+    margin: 0 auto;
+    width: 18em !important;
+}
+
+.login-value {
+    background: #DFDFDF !important;
+    border-radius: 2px !important;
+}
+
+#login {
+    background-color: #FFFFFF;
+    margin: auto auto;
+    padding: 20px 20px 0px 20px;
+    border-radius: 0px;
+    width: 18em;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    -webkit-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+#login h2 {
+    font-size: 31.5px;
+    line-height: 40px;
+    margin-bottom: 10px;
+}
+
+.container, .wrapper {
+    width: 100% !important;
+}
+
+.container {
+    min-width: 960px;
+    height: 100%;
+}
+
+.wrapper {
+    min-height: 200px;
+    padding: 0px 0px;
+}
+
+.masthead {
+    /*font-family: "Lato", "Helvetica", sans-serif;
+    width: 100%;
+    min-height: 38px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #B7B7B7;*/
+}
+
+.nav-cui li a {
+    font-family: "Lato";
+    color: #5E6E78;
+    font-size: 1em;
+    margin: 1.5em 0em;
+}
+
+/**** Login. */
+
+.login-banner,
+.forgot-banner{
+    width: 100%;
+}
+
+.login-banner-text {
+    max-width: 340px;
+    margin: 0px auto 10px auto;
+    padding: 10px;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.login-banner-text span{
+    font-size: 25px;
+    color: #FFFFFF;
+}
+
+#login .inline-help {
+    color: #FFFFFF;
+}
+
+.remember-me-text a {
+    font-size: 12px;
+}
+
+.forgot-pass-text {
+    text-align: right;
+    width: 100%;
+    margin-top: 2em;
+}
+
+.forgot-pass-text a {
+    font-size: 12px;
+    text-decoration: underline;
+    color: #989898 !important;
+}
+.forgot-pass-text a:hover,
+.forgot-pass-text a:focus,
+.forgot-pass-text a:visited{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+
+/**** Elements */
+.btn-flat-blue {
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #306D9C),
+            color-stop(1, #214C70)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #306D9C 0%, #214C70 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #306D9C 0%, #214C70 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #306D9C 0%, #214C70 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #306D9C 0%, #214C70 100%) !important;
+    background-image: linear-gradient(to bottom, #306D9C 0%, #214C70 100%) !important;
+
+    font-weight: bold;
+    font-size: 18px;
+
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: 0px;
+    border-radius: 4px;
+}
+
+.btn-flat-blue:hover {
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #214C70),
+            color-stop(1, #214C70)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #214C70 0%, #214C70 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #214C70 0%, #214C70 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #214C70 0%, #214C70 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #214C70 0%, #214C70 100%) !important;
+    background-image: linear-gradient(to bottom, #214C70 0%, #214C70 100%) !important;
+}
+.btn-flat-general {
+
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #214C70),
+            color-stop(1, #214C70)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #D3D3D3 0%, #AFAFAF 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #D3D3D3 0%, #AFAFAF 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #D3D3D3 0%, #AFAFAF 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #D3D3D3 0%, #AFAFAF 100%) !important;
+    background-image: linear-gradient(to bottom, #D3D3D3 0%, #AFAFAF 100%) !important;
+
+    font-weight: bold;
+    font-size: 18px;
+
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: 0px;
+    border-radius: 4px;
+}
+
+.btn-flat-general:hover {
+
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #214C70),
+            color-stop(1, #214C70)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #AFAFAF 0%, #AFAFAF 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #AFAFAF 0%, #AFAFAF 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #AFAFAF 0%, #AFAFAF 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #AFAFAF 0%, #AFAFAF 100%) !important;
+    background-image: linear-gradient(to bottom, #AFAFAF 0%, #AFAFAF 100%) !important;
+}
+.info, .success, .warning, .error, .validation {
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+.info {
+    /*color: #00529B;
+    background-color: #BDE5F8;*/
+}
+.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.warning {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+
+.btn-flat-grey {
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #313131),
+            color-stop(1, #1E1E1E)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #313131 0%, #1E1E1E 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #313131 0%, #1E1E1E 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #313131 0%, #1E1E1E 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #313131 0%, #1E1E1E 100%) !important;
+    background-image: linear-gradient(to bottom, #313131 0%, #1E1E1E 100%) !important;
+
+    font-weight: bold;
+    font-size: 18px;
+
+    color: #FFFFFF;
+    padding: 10px 20px;
+    border: 0px;
+    border-radius: 4px;
+}
+
+.btn-flat-grey:hover {
+    background-image: -webkit-gradient(
+            linear,
+            left top,
+            left bottom,
+            color-stop(0, #1E1E1E),
+            color-stop(1, #1E1E1E)
+    ) !important;
+    background-image: -o-linear-gradient(bottom, #1E1E1E 0%, #1E1E1E 100%) !important;
+    background-image: -moz-linear-gradient(bottom, #1E1E1E 0%, #1E1E1E 100%) !important;
+    background-image: -webkit-linear-gradient(bottom, #1E1E1E 0%, #1E1E1E 100%) !important;
+    background-image: -ms-linear-gradient(bottom, #1E1E1E 0%, #1E1E1E 100%) !important;
+    background-image: linear-gradient(to bottom, #1E1E1E 0%, #1E1E1E 100%) !important;
+}
+
+
+
+
+.btn-login-area {
+    width: 87%;
+    margin: 0 auto;
+}
+
+.btn-login {
+    background: #8AAD96;
+    border: 0 none;
+    border-radius: 2px;
+    height: 47px;
+    margin: 0 auto;
+    position: relative;
+    width: 100% !important;
+}
+
+/**** Forgot password. */
+.forgot-pass-wrapper {
+    max-width: 300px;
+    margin: 20px auto;
+}
+
+.forgot-pass-form {
+    background-color: #FFFFFF;
+    border-radius: 0;
+    margin: auto;
+    max-width: 300px;
+    padding: 25px 30px 19px;
+}
+
+.forgot-pass-form .email {
+    width: 100% !important;
+    margin-bottom: 20px;
+}
+
+.forgot-form-elements {
+    margin-bottom: 10px !important;
+}
+
+.forgot-banner-text {
+    max-width: 340px;
+    margin: 0px auto 10px auto;
+    padding: 10px;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.forgot-banner-text span{
+    font-size: 25px;
+    color: #FFFFFF;
+}
+
+.btn-forgot {
+    height: 47px;
+    width: 100% !important;
+}
+
+.login-link-text {
+    text-align: right;
+    width: 100%;
+}
+
+.login-link-text a {
+    font-size: 12px;
+    text-decoration: underline;
+    color: #000000 !important;
+}
+.login-link-text a:hover,
+.login-link-text a:focus,
+.login-link-text a:visited{
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+/**** Reset password. */
+
+.forgot-pass-form .reset{
+    width: 100% !important;
+    margin-bottom: 20px;
+}
+
+.forgot-pass-form .mins {
+}
+
+/**** Edit profile. */
+.wrapper #profile {
+    background: #FFFFFF;
+    max-width:500px;
+    margin: 0px auto;
+    padding: 10px;
+}
+
+.profile-save-banner-text {
+    max-width: 500px;
+    margin: 0px auto 10px auto;
+    padding: 10px;
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.profile-save-banner-text span{
+    font-size: 25px;
+    color: #FFFFFF;
+}
+
+
+.wrapper #profile .span6 {
+    width: 100%;
+    border-radius: 0px;
+}
+
+.wrapper #profile .control-label {
+    width: 35%;
+    color: #000000;
+}
+.wrapper #profile .form-horizontal .help-block {
+    color: #FFFFFF;
+}
+
+.help-block.alert {
+    color: #3A87AD !important;
+}
+
+.wrapper #profile .controls {
+    width: 50%;
+    float: left;
+    margin-left: 10px;
+}
+
+.wrapper #profile .form-actions-save-profile {
+    color: #000000;
+    text-align: center;
+}
+
+.wrapper #profile .form-actions-save-profile a {
+    color: #000000;
+    text-decoration: underline;
+}
+
+.wrapper #profile .form-actions-save-profile a:hover,
+.wrapper #profile .form-actions-save-profile a:active {
+    text-decoration: none;
+}
+
+.btn-save-profile {
+    width: 100%;
+}
+
+.square-input {
+    border-radius: 0px !important;
+    height: 2em !important;
+    width: 100%;
+}
+
+/* Message Boxes. */
+.info-message, .success-message, .warning-message, .error-message, .validation-message {
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 10px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    width: 100%;
+}
+.info-message {
+    color: #00529B;
+    background-color: #BDE5F8;
+}
+.success-message {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+}
+.warning-message {
+    color: #9F6000;
+    background-color: #FEEFB3;
+}
+.error-message {
+    color: #D8000C;
+    background-color: #FFBABA;
+}
+.error-boilerplate {
+    font-weight: bold;
+    border-bottom: 1px solid #D8000C;
+}
+
+.info-message .icon-dark {
+    margin: 0px 10px 0px 10px;
+}
+
+.content-title {
+    border-bottom: 1px solid #FFFFFF;
+    color: #FFFFFF;
+    display: inline-block;
+    font-size: 2em;
+    margin: 0em 0em 0.55em 0em;
+    width: 100%;
+}
+
+.content-title .debt-id-title,
+.content-title .account-search-title,
+.content-title .declines-title,
+.content-title .queue-title {
+    display: inline-block;
+    margin: 0.7em 0em 0em 0em;
+}
+
+.dataTables_length label select {
+    width: 10em;
+}
+
+.dataTables_filter label input {
+    height: 2em;
+}
+
+.dataTables_scrollHeadInner,
+.search-results-table {
+    width: 100% !important;
+}
+
+.toolbar {
+    float: right;
+    height: 50px;
+    display: inline-block;
+    width: auto;
+}
+
+.button-link-wrapper {
+    float: right;
+}
+
+.button-link-wrapper a {
+    background: #FFFFFF;
+    display: inline-block;
+    color: #000000;
+    margin: 2px;
+    min-width: 133px;
+    font-size: 0.5em;
+    line-height: 40px;
+    text-align: center;
+    border: 0px;
+    cursor: pointer;
+}
+
+.button-link-wrapper a:hover,
+.button-link-wrapper a:active{
+    background: #FFFFFF;
+    color: #000000;
+    text-decoration: underline;
+}
+
+.search-icon-white {
+    background-image: url("images/glyphicons-halflings-white.png");
+    background-position: -48px 0px;;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 14px;
+    line-height: 14px;
+    vertical-align: text-top;
+    width: 14px;
+}
+
+.email-icon-white {
+    background-image: url("images/glyphicons-halflings-white.png");
+    background-position: -73px 0px;;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    line-height: 12px;
+    vertical-align: text-top;
+    width: 12px;
+}
+
+.email-icon {
+    background-image: url("images/glyphicons-halflings.png");
+    background-position: -73px 0px;;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 12px;
+    margin: 2px;
+    line-height: 12px;
+    vertical-align: text-top;
+    width: 12px;
+}
+
+.search-icon {
+    background-image: url("images/glyphicons-halflings.png");
+    background-position: -48px 0px;;
+    background-repeat: no-repeat;
+    display: inline-block;
+    height: 14px;
+    line-height: 14px;
+    vertical-align: text-top;
+    width: 14px;
+}
+
+.page-wrapper {
+    min-height: 200px;
+    padding: 0.7em 3.5em;
+    width: 100%;
+}

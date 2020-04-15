@@ -1,0 +1,385 @@
+$(document).ready(function() {
+
+    // Load general.js before this file.
+
+    searchResultsTemplate = Handlebars.compile($("#search-results-template").html());
+    declineResultsTemplate = Handlebars.compile($("#decline-results-template").html());
+    queueResultsTemplate = Handlebars.compile($("#queue-results-template").html());
+    searchErrorsTemplate = Handlebars.compile($("#error-messages-template").html());
+
+    showHelp();
+
+    watchUrl();
+
+    document.title = "Account Search";
+
+    $('.search_button').on('click', function(event) {
+        runSearch($(this));
+        event.preventDefault();
+    });
+    
+    $('.clear_search').on('click', function(event){
+        $('.search-input').each(function(){
+            $(this).val('');
+            event.preventDefault();
+        });
+    });
+    
+    $('.decline-link').on('click', function(event){
+        $('.search-box').hide();
+        $('.declines-box').show();
+        loadDeclineTable();
+    });
+
+    $('.my_queue').on('click', function(event){
+        $('.search-box').hide();
+        $('.queue-box').show();
+        loadQueueTable();
+    });
+
+    $('.search-advanced').html('+ Show More Options');
+    $('.search-advanced').on('click', function(){
+        if ($('.search-slide').slideToggle('fast')) {
+            console.log($('.search-slide').is(':visible'));
+            if ($('.search-slide').height() > 1) {
+                $('.search-advanced').html('+ Show More Options');
+            } else {
+                $('.search-advanced').html('- Hide More Options');
+            }
+        }
+    });
+
+    loadTriggers();
+
+});
+
+function runSearch($thisButton) {
+    $('.results-welcome').hide();
+    $('.ajax-error').hide();
+    $('.ajax-loading').show();
+    $('.results-wrapper').hide();
+    $('.results-loading').show();
+    $('.declines-box').hide();
+    $('.queue-box').hide();
+    $('.search-box').show();
+
+    // See documentation in /collector_api/search.
+    var ajax_data = new Array;
+
+    if ($(document).find('#search_status_code').val() == '1') {
+        var search_fields = [
+            'debtId',       'statusCode',   'cltId',
+            'lastName',     'firstName',    'ssn',
+            'referenceNo',  'state',        'phone',
+            'warning'
+        ];
+    } else {
+        var search_fields = [
+            'debtId',       'cltId',
+            'lastName',     'firstName',    'ssn',
+            'referenceNo',  'state',        'phone',
+            'warning'
+        ];
+    }
+
+    var search_fields_length = search_fields.length;
+    for (var x = 0; x < search_fields_length; x++) {
+        ajax_data.push({
+            'name': search_fields[x],
+            'value': JSON.stringify($("[name='" + search_fields[x] + "']").val().split(""))
+        });
+    }
+    ajax_data.push({
+        'name': 'ci_csrf_token',
+        'value': $("[name='ci_csrf_token']").val()
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "/collector_api/search/",
+        data: ajax_data,
+        timeout: genAjaxTimeout,
+        beforeSend: function() {
+            $('.declines-box').hide();
+            $('.queue-box').hide();
+            $('.search-box').show();
+            //setButtonStatusText($thisButton, 'disabled');
+        },
+        success: function(data) {
+            $('.results-loading').hide();
+            $('.results-wrapper').show();
+            if (!$.isEmptyObject(data.payload.search_results)) {
+                $('.results-wrapper').html(searchResultsTemplate(data));
+                $('.search-results-table').dataTable();
+            } else {
+                $('.results-wrapper').html('<div class="warning-message"><p>Your search returned no results.</p></div>');
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            var errorMessages = [];
+            if (!isJSON(xhr.responseText)) {
+                errorMessages.push("Response is not JSON.");
+            }
+            if (ajaxSetting === "timeout") {
+                errorMessages.push("System response error, API timeout.");
+            }
+            if(xhr.status !== 200) {
+                errorMessages.push("See system log.");
+            }
+            $('.results-loading').show();
+            $('.results-wrapper').hide();
+            $('.ajax-loading').hide();
+            $('.ajax-error').show();
+            $('.error-messages-text').html(searchErrorsTemplate(errorMessages));
+        },
+        complete: function() {
+            //setButtonStatusText($thisButton, 'enabled');
+        }
+    });
+}
+
+function runSpecialSearch() {
+    $('.results-welcome').hide();
+    $('.ajax-error').hide();
+    $('.ajax-loading').show();
+    $('.results-wrapper').hide();
+    $('.results-loading').show();
+    $('.declines-box').hide();
+    $('.queue-box').hide();
+    $('.search-box').show();
+
+    // See documentation in /collector_api/search.
+    var ajax_data = new Array;
+    var search_fields = [
+        'debtId',       'statusCode',   'cltId',
+        'lastName',     'firstName',    'ssn',
+        'referenceNo',  'state',        'phone',
+    ];
+
+    ajax_data = {
+        'ci_csrf_token': $("[name='ci_csrf_token']").val(),
+        'special_field': $("[name='special_field']").val(),
+        'special_value': $("[name='special_value']").val(),
+        'special_user_id': $("[name='special_user_id']").val()
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/collector_api/search/",
+        data: ajax_data,
+        timeout: genAjaxTimeout,
+        beforeSend: function() {
+            $('.declines-box').hide();
+            $('.queue-box').hide();
+            $('.search-box').show();
+        },
+        success: function(data) {
+            $('.results-loading').hide();
+            $('.results-wrapper').show();
+            if (!$.isEmptyObject(data.payload.search_results)) {
+                $('.results-wrapper').html(searchResultsTemplate(data));
+                $('.search-results-table').dataTable();
+            } else {
+                $('.results-wrapper').html('<div class="warning-message"><p>Your search returned no results.</p></div>');
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            var errorMessages = [];
+            if (!isJSON(xhr.responseText)) {
+                errorMessages.push("Response is not JSON.");
+            }
+            if (ajaxSetting === "timeout") {
+                errorMessages.push("System response error, API timeout.");
+            }
+            if(xhr.status !== 200) {
+                errorMessages.push("See system log.");
+            }
+            $('.results-loading').show();
+            $('.results-wrapper').hide();
+            $('.ajax-loading').hide();
+            $('.ajax-error').show();
+            $('.error-messages-text').html(searchErrorsTemplate(errorMessages));
+        }
+    });
+}
+
+function showHelp() {
+    $(document).on('click', '.help-link', function(event){
+        var msg = "The % character is a wildcard.  It allows you to preform searches on partial names, like 'Br%an' when looking for either Brian or Bryan.  000%00%0000 is the best format for searching SSNs.\n\nSimply press Enter to preform your search or to select the account you wish to open.";
+        alert(msg);
+        event.preventDefault();
+    });
+}
+
+function loadTriggers() {
+    which = getParameterByName('dashboard');
+    switch(which) {
+        case 'collector':
+            $(document).find('.my_queue').click();
+            break;
+        case null:
+        default:
+            break;
+    }
+}
+
+function loadDeclineTable() {
+    $('.results-loading').show();
+    $('.results-wrapper').hide();
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/get/declined",
+        timeout: genAjaxTimeout,
+        beforeSend: function() {
+            $('.declines-box').show();
+            $('.queue-box').hide();
+            $('.search-box').hide();
+        },
+        success: function(data) {
+            $('.results-loading').hide();
+            $('.results-wrapper').show();
+            if (!$.isEmptyObject(data)) {
+                $('.results-wrapper').html(declineResultsTemplate(data));
+                $.fn.dataTable.moment('MMM D YYYY hh:mm:ss A');
+                $('.decline-results-table').dataTable();
+                $('.note').on('click', function(){
+                    $(this).removeClass('note-overflow');
+                    $(this).tooltip('destroy');
+                });
+                $('.expand-note').on('click', function(){ $(this).parent('.note').removeClass('note-overflow'); })
+                $('.note').tooltip({title: "Click to Read More.", placement: "right"});
+            } else {
+                $('.results-wrapper').html('<div class="warning-message"><p>No declined payments found.</p></div>');
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            var errorMessages = [];
+            if (!isJSON(xhr.responseText)) {
+                errorMessages.push("Response is not JSON.");
+            }
+            if (ajaxSetting === "timeout") {
+                errorMessages.push("System response error, API timeout.");
+            } 
+            if(xhr.status !== 200) {
+                errorMessages.push("See system log.");
+            }
+            $('.results-loading').show();
+            $('.results-wrapper').hide();
+            $('.ajax-loading').hide();
+            $('.ajax-error').show();
+            $('.error-messages-text').html(searchErrorsTemplate(errorMessages));
+        }
+    });
+}
+
+function loadQueueTable() {
+    $('.results-loading').show();
+    $('.results-wrapper').hide();
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/get/queue",
+        timeout: genAjaxTimeout,
+        beforeSend: function() {
+            $('.declines-box').hide();
+            $('.queue-box').show();
+            $('.search-box').hide();
+        },
+        success: function(data) {
+            $('.results-loading').hide();
+            $('.results-wrapper').show();
+            if (!$.isEmptyObject(data.payload.queue)) {
+                $('.results-wrapper').html(queueResultsTemplate(data));
+                $('.queue-results-table').dataTable({
+                    "bStateSave": true,
+                    "sScrollX": "100%",
+                    "bScrollCollapse": true,
+                    "oLanguage": {
+                        "sSearch": "Filter:"
+                    }
+                });
+            } else {
+                $('.results-wrapper').html('<div class="warning-message"><p>Your queue appears to be empty.</p></div>');
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError){
+            var errorMessages = [];
+            if (!isJSON(xhr.responseText)) {
+                errorMessages.push("Response is not JSON.");
+            }
+            if (ajaxSetting === "timeout") {
+                errorMessages.push("System response error, API timeout.");
+            }
+            if(xhr.status !== 200) {
+                errorMessages.push("See system log.");
+            }
+            $('.results-loading').show();
+            $('.results-wrapper').hide();
+            $('.ajax-loading').hide();
+            $('.ajax-error').show();
+            $('.error-messages-text').html(searchErrorsTemplate(errorMessages));
+        }
+    });
+}
+
+function watchUrl() {
+    //debt_id, status_code, client_id, last_name, first_name, ssn, reference_number, state, phone, clt_id, status, aging, collected={today, week, month}, touched={today, week, month}
+    //http://webui-dev/collector_ui/search?collected=today
+    varsObject = getURLParameters(window.location.href);
+    if (varsObject.hasOwnProperty('ssn')) {
+        varsObject.ssn = varsObject.ssn.replace(/\D/g,'');
+    }
+    console.log(varsObject);
+    if (getObjectSize(varsObject) > 0) {
+        if (varsObject.hasOwnProperty('special_field')) {
+            $("[name='special_field']").val(varsObject.special_field);
+            $("[name='special_value']").val(varsObject.special_value);
+            $("[name='special_user_id']").val(varsObject.special_user_id);
+            runSpecialSearch();
+        } else {
+            if (ifSetSearchField(varsObject, 'debt_id', 'debtId')
+                && ifSetSearchField(varsObject, 'status_code', 'statusCode')
+                && ifSetSearchField(varsObject, 'client_id', 'cltId')
+                && ifSetSearchField(varsObject, 'last_name', 'lastName')
+                && ifSetSearchField(varsObject, 'first_name', 'firstName')
+                && ifSetSearchField(varsObject, 'ssn', 'ssn')
+                && ifSetSearchField(varsObject, 'reference_number', 'referenceNo')
+                && ifSetSearchField(varsObject, 'state', 'state')
+                && ifSetSearchField(varsObject, 'phone', 'phone')) {
+                runSearch();
+            }
+        }
+    }
+}
+
+function ifSetSearchField(varsObject, objectKey, fieldName) {
+    if (varsObject.hasOwnProperty(objectKey)) {
+        setSearchField(fieldName, varsObject[objectKey]);
+    }
+    return true;
+}
+
+function setSearchField(fieldName, fieldValue) {
+    $(document).find("[name='" + fieldName + "']").val(fieldValue);
+}
+
+function handlebarHelpers() {
+    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) { switch (operator) {
+        case '==': return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        case '===': return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        case '!=': return (v1 != v2) ? options.fn(this) : options.inverse(this);
+        case '<': return (v1 < v2) ? options.fn(this) : options.inverse(this);
+        case '<=': return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+        case '>': return (v1 > v2) ? options.fn(this) : options.inverse(this);
+        case '>=': return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+        default: return options.inverse(this);
+    }});
+}
+
+function isJSON(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}

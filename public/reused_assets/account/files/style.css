@@ -1,0 +1,253 @@
+/* Backgrounds. */
+
+.backgroundimage-noblurring {
+    background-image: url('../images/ggbackground.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.backgroundimage-solid {
+    background-color: #4A5852;
+}
+
+.backgroundimage-blur5 {
+    background-image: url('../images/ggbackground_blur5.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.backgroundimage-blur10 {
+    background-image: url('../images/ggbackground_blur10.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.backgroundimage-blur20 {
+    background-image: url('../images/ggbackground_blur20.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.backgroundimage-blur30 {
+    background-image: url('../images/ggbackground_blur30.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+.backgroundimage-blur50 {
+    background-image: url('../images/ggbackground_blur50.jpg');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+}
+
+/* Dashboard. */
+
+.dashboard-area {
+    color: #FFFFFF;
+}
+
+.dashboard-account-search {
+    border: 1px solid #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+
+.focus-timer {
+    color: #FFFFFF;
+}
+
+.dashboard-icon.accounts {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAgCAYAAACLmoEDAAACAUlEQVRYhe3Wu2sUURjG4V3DhiTijUC0yIpgKm+tCAoWUYgKARFFO1EJgo1BtFESC0HIH2ARQVRELEQi2FkJQVC84KURA2KhKIKggmhMHos5miXsZU6SzU6RF14Y5v3mmx/nMN+cHA7jfMY9gGIOkxJNZthwKhcuBnMZFdoC4+kF2LnUjGGxDIvrzDf9nelh0Rq+xvem9Bp9yGcGFkvxOHyRIziJMxgNz93CoqzAXsNv7C6T9f9v0mhYdIYVvVCl0Qg+o6nRsAdCtrFKo4OhZn2FfBQ/Iv0JxVjYIyErTs9KanpCzeYK+VEMRXoQLbGw20K2twrsACbQXqlmtkoL24QxvEBbmbwTX3CvXqCpYUNhN8bxCFuRRwG9eIev6MoEbCjuwcdQ9wt/wvUrbKrxoqt4EukH6JgpbCsO4blklI3jIY5hZQ3Yi7gb6ZtYHg2L7fhgShMlhp84UQ14tkoFiy7J3HuJHWguyfJYJ/kpQG+jYS/jO1ZVaVTAU7xVpzNCTVi04BuGUzTbF3rsLJOdxY1ID2NJDOyecL87BWyzZIRdKZPdxptIPyvdzTSwl8LKFmrBhvrrkh/EnB9o0sCO4U5Ew/2hz5Z5hcXqcC/1SMIKyTg7N9+wG8KWro1sel+Vs29dYLOmBdh6qRzsEDoy6jWlsP+OfFlXfw67cDzj7kP7X1ItMT2/nYHTAAAAAElFTkSuQmCC");
+}
+
+.dashboard-icon.status {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAjCAYAAADizJiTAAAAzUlEQVRYhe3OMWpCQRQF0A+CkjWktkqRBYQQ0lvYpQy4kazAXVjYpdPsIGJlK3ywTS0k7bFw2jGFYzJf3oWpLu/OadDitak9jnn7b8evCWjpBLR0Alo6l4biBZMSQ5eGLvFZYugvoKsSQwFN+3VA0cMYvUxfDfQxbTxk+mqgz2njKdNfBxQj9KuG4i7djmqH3qfbcUADeg4UNxh0AfqBWRegaywCGtCABjSg3Yd+YXPi/WCf6dq00Wb6Pb4z3Tbd7k78vcawwRTvFb85bg+V2riRekCWUAAAAABJRU5ErkJggg==");
+}
+
+.dashboard-icon.aging {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAArCAYAAADhXXHAAAAEEklEQVRYhcXZW4iVVRQH8DPjJcdepsYeSpumFJLoZk69RA+pET10kQzKCoOcIEjS6aGIMiMUujBFpm8mPaSZ0OUl8vKSZNBNTLALdNNEkyIroZx0/PWw12GOxzOe7zvznTkLDpyz99r/9f/Wt/Zaa+9TKjUoaMMs9GMDvsRh/IPjOIIf8CEGcDs6G7XXKMlurMQ+w3IQW7AeX+NPrMHb2I3B0PsP7wfxtmaSnIp1YXAoyPVhWpXeG/ixamwi5oSHDwfxvbiraJJtWIqj4aG16DmD/mlkq+bH4158E6S34eIiiHbhgwDdgukZ1pyRbIXeODyKvyO+54+GaA++C28uybHuTizPoX8JvsBJ9DdK9EBslBtyA+S3NwnvxBt8Ks/CrvDoEVzdRI7VdtsjBUJflgVtEaODY+HRGvYnYGvYv7ae8tJ4sswxWrTEm90vFZTJIylNjfS0JQPgDjxcONNh/LnhtJUjKbwe7s+SnjbjGK4onOmwjTeDz9Tqie6oTGszAnVJJXYPzmoS2elSj/FK9cRKqYT25AC7OXLjQNFEK2xsjKIxuTzQJjUldWO1BtjqIDw357r5mJlBb07E7sLywKwYWNwA2Q6pyzqAczLoT6lI/k9n0G/Hb3irPPBYLJ5WZ+1IgLMi3jfV0bsFh2Jj9svYIsZGO1z+sQEHGyFaAfh4PPD9NeY68FrM78mbQaRmBy4sYVcj8VoF2I6P8Bdm4OwYny21gifxUiOZoyJu55WkZnj9aMgG6EWxcwW57REe+3HjKHBnBuYDJenMtDt29mq8iusbAD1PSuJbw4vie65zV2Sn5RV81gXWkhJO4F/8XvFZ1gDZawL0PnSGd1c0gDMpQqfM5Y/A7S9JreCavKA1jIyPDXQsjAzi8gJwu4PsQyWpu9k8WtAAnoIXpT7juoIwe4PsgpJ0rv+qCOBmCO4JsleVpOPxICa2mlgtwfNSQ9NRki4cyFnfx0rwOT4p/+iMfPhyi3mdJjg/ssqzlYPvRXGY0EJupwmeiLd+aeXgbeUc2UJup4h0ePwJO6sn2qS7p28xrkX8ThEsDgfeWmtyQUwubQG3ai6d+BWfGamVlGr5URkOjc0U6ep0CL1nUuqJ8rsLk8aQXyWHRfGGV2VRviPSxbtjHb9S73pM6o3HZ11UvpnZOFbpLIgejY1+bt7FTwbh7ZjSJI5lW4ui5O9VfamRA+TBAPkFN2Vc8wy2ZdTtjM0kXn0+j9YA7MX3FWExo45+3ZvvSPh9kZ6GsKqw/SGdUJ+L4D+BTZiH9jxkcUGU0J/j4T/F7EJIjmBsQDrFkk4EG7EsyF8mXdrtkw6QvViIFwxfxcPHalWmJpHuwN3SncMh9eU4dmKFyqakFYJp0p3qIjwSnu6T/gy5UkEF5n+AxWJ2M3ZkgQAAAABJRU5ErkJggg==");
+}
+
+.row-hl {
+    border-bottom: 2px solid #ffffff;
+}
+
+.dashboard-hl {
+    border-bottom: 1px solid #ffffff;
+}
+
+.row-2 a,
+.row-2 a:hover,
+.row-2 a:visited,
+.row-1 a,
+.row-1 a:hover,
+.row-1 a:visited {
+    color: #FFFFFF;
+}
+
+.total-pending-amount span {
+    border: 1px solid #FFFFFF;
+}
+
+.editable-click, a.editable-click, a.editable-click:hover {
+    border-bottom: 1px dashed #FFFFFF !important;
+}
+
+
+.multiple-edit-posted-pmt-date,
+.main-editable.editable-click,
+.main-editable.editable-click,
+.main-editable.editable-click:hover,
+#expanded-box .editable-click,
+#expanded-box a.editable-click,
+#expanded-box a.editable-click:hover {
+    border-bottom: 1px dashed #989898 !important;
+}
+
+/* Bootstrap toggle. */
+
+#settings-box-dialog .btn-primary {
+    background: #8AAD96 !important;
+    border: 1px solid #8AAD96 !important;
+    border-radius: 0px !important;
+}
+
+#settings-box-dialog .btn-default {
+    border: 1px solid #bfbfbf !important;
+    border-radius: 0px !important;
+}
+
+#settings-box-dialog .toggle-handle {
+    border-left: 0px solid #8AAD96 !important;
+    border-right: 1px solid #BFBFBF;
+    border-radius: 0px !important;
+}
+
+/* Hamburger Menu. */
+
+.hamburger-menu-button {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAAgCAYAAACLmoEDAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAC9SURBVFiF7dUxDgFREIfxb9gIOldQC5dwDIfQULuBUskJHEwktETyV7DlrjXJy9tN5le9ZvK+4s2uSVoBM9rtCRwK4AT087Y0ckcfu9wlVSSNv43bXu6Yf0RsKhGbSsSmUngHnX++C7A3M3nudMcCG2D+58wVOAI3z4XuWDNbeGe9OvVmOxUbC1YjFqyVOhUbC1YjFqyVIjaViE2lU7Hlp2soaZK1pNqoPJikBzDIGNPU2iQtgWnukh9ewPkNuLFBb5Ut5vEAAAAASUVORK5CYII=");
+}
+
+.switch-user {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAE2SURBVEiJvdTPKsRRFMDx7y9jgxLKUEphY+UZvMUsPQCpkVISISsNlkoWNjY2XsCfjWwYJTML1KzVPMCsvja/mcYkzejMnN09997z6d5zuxAU6oZ6oiZRNX9DBtQb9bQX0K163DUkhQbVO/WoF9C9WgDIpMk+YAGYAaLu8wIoqLWMmgWugX7gMwhojkXUS3U7urK6pRbVUdSqOhQMbKov6lg9UQsG1tRS2oZGMgxR82pZnWideAgCltQ3dbzdDZPqfIfIbKMHbSyeUt/VXCfIH/VeWxMTadOWI4C0Zq15kE3vdCUK+IGkPSirq8HAsPpVP0FJzQcDiXqonidqEZgDHiMRYBqoALkMcAWsA2dANRCpJEny0RipO+ln1t47/2+ou41fs8vQnvrcC2hffVJHug0dRD7pb11pKMO9M+SXAAAAAElFTkSuQmCC");
+    background-repeat: no-repeat;
+}
+
+/* Reports Main. */
+
+.reports-title span {
+    color: #FFFFFF;
+}
+
+.reports-section-title {
+    color: #FFFFFF;
+}
+
+.reports-box.row-hl {
+    border-bottom: 2px solid #FFFFFF;
+}
+
+.reports-box li {
+    color: #FFFFFF;
+}
+
+.reports-box li a {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+/* Payments Posted. */
+
+.user-area .displayed-user-card {
+    color: #FFFFFF;
+}
+
+/* Impact Board. */
+
+.leaderboard-settings {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAACCklEQVRIib3W32tOcRzA8bOh2LDJGBLRNEXJaqHI8hBZKaGJPwCruXpoJfKj3RMXWpEmSkxTLpBysXbnhhDJ/EyT/LoZLXq58H3a06Nnz9mzZ+dcnc/nfN7f9/d8z7fz/URRgQvzcQyvsLVQfWAqsA5p3MB7HIrDRqhEB37gMppicgfwG29xKcQNmBAHXo5+3EZdrJkOs7vwB5+wezTgFnxF62iEWXwVfqEFb3AeEwtBq/ANm4uRZo3zAHtRgz705F1qzA3Ls2cs0jBWGlfD/ZQg78xXfB3nxioNY9XjXVY8M2y2ltzCTfiAaaUQhzFrcuIUPqM6O3kHbaWSjjCZbpzIBEvwvZRvO4J4Jb5gUoQ2XBtvaZb8MZoj3MT+BMWncCYK/+DVCYq3oS/CIBYnKF6Kj1H4odcURkomrsXPKOyyRQmK52EowjOsTVC8AgMRruBgguLt6I3QilsJik+jI/OxBzEjIfFzpDJBD44mIE3hNcoziYawu2eNs/ge0rnJTnTn5LpQVSJpS+jjKnIfTMVLtGflev87vIuTLsBA3pYKdaGgLcTt6BqjtBpPcLJQ4bLQppxFY+gayouULgzH4IW4wBzcxQsMYU0R0h2heTyOsrhQJdbjoX/XkZhcGTbgfthIzXGFO/EovOVTXMQ+zI7BNoazvR+HMTmWNMD12IjpsaFhthZNcZf1L9A2tf41DXQOAAAAAElFTkSuQmCC");
+}
+
+.leaderboard-area .crown {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAqCAYAAAAeeGN5AAAEr0lEQVRoge3Ze+zVcxgH8Eo/pZK2LkySa5RhY0WGrViMzSVtmFly15BLzGTmOvtNpjGLsJjWSjOGhMUQoZq5lEs0tyxKpUJ3L398P2fn+X1/5/Q753d+df7p2b7b9zzP+3k/z/P5Pt/P5XvatdvJgsvwDcbu7Fg7VdAZq2SyHt3rnVOrBVdpKrfUO6dWCdpjSa6YH7FHvXOrWnBmKOK7cD+q3rlVLXgrJb8Rh2Bd+j2/3rlVJTgqPIkpSfdI0J1Q7xwrFjydkv4Pg5KuP7Yl/Yx651iRoHdqLZiTs81K+q3ot7MS6NCGXHeHdhqRsw0NtofbMGaHws0A/ImvMLBG0k74PSW7uAzmk2T/C91qjHc4Pktcx7bD+WG0NuCCGsjHBK4ry2AuDJgbaog1SnGGhEvboUtOCY1asbjhi+S/Ep3LYDri54T7odoWRwMezeW7ET0KgCc1l7noVUWQ04LvvS1gxwfseVXE6IePS+Q6LYIGlwDALxhcYaDZyWcT9m0Bu4+speH9CvnPkL3bpWRYHvxlMqzBKwG4SZn+D75HyNYUmFphco+FGMfvANcB9wV+mIqf0v0ytM87jQvgM3GH4iIHU9CpTMDJAXdMhcUciu3JZ1oZTB9ZuxfkX9kkc1LQTSjl2BObE+DFpDtd8TwCC+QWu+T3T7LPraSQ4Pty8tuCvjnbyfgtxF5aGCg8m3Tb8n6RYGYCbUbPpDsQiwLpSgwPPncG29lVFnNK8H0o6MfLdgkFmSUd7NBN8X2bvSPyEYHgpqDvFEajMCK3Yc8wet/K925lBRUGajX21/R93YJxOfwVwT5yR8QdFNeAr0rYr1ZsRbJdQ0GurbaQxHlJ4Pg73P+CE0vg5yf7H2hoifyeQDikhH0IftVUVqNLK4tp0HzKnSO1eQ47MGAmVkLeX3GWeaoMpjc+DMTrVbH4BZ6ueCFXyLPKtCsmBlxl+0i8nRzWlRtxTXubbB14UIXbExyp+TcCeLcMvkE2+cBHFRWSHONmcHQJ+2Hh6S1UnF2kgWjWIjn/i3M+H2BG+H1sCZ+RwX55NcV0UuzjeSXsjwfi4zBI048WP+G4En574onc02yUbT4HKK7yz5XwLWyXNqj26IBJIeiAoO+hOOu8F/TdFRdBsp3smGA/SPYUC7IW5+RivpZsm7Ff0PdV3I08U1UhieDoELgx6G8P+nNzPu1li+j2gJksa5E1QbcIB5eIOTxg7g/6u4J+aNXFJJIFiWCFrBU6yuZ/+F6Zl122+Jbb4U5WZo+XfD9PuFXYKw3QsqT7ulWFJOJr4lPAReH39S34Ds09IZhUQczRAX9V7mndWksx3RU3ka/i03S/Fl134DdM8VtAlG0tJSSbJFYk/BJMT/db0KfVxSTy5xNZPE80lsG2xwRNjw7TcaOm26CZLQxGfEcKcV+qqZBEfGpudLfigBK4nngj4DbhumAfiuXBvliYJXNcvWRnlyhn1VxMIl8aSNfJ5vz8tTwXfFkJzMIcZl0agFJXnP2Wa6t/D2SnznrKA21SSCqmB16XfSfY1deban3xd8tu2cUi+9f4HdmJcldf87B3WxYTj6v1kGbH91oLGiv7ELirr5srzfF/zSP/wa6y+7gAAAAASUVORK5CYII=");
+}
+
+.leaderboard-area .lbtab.ui-tabs-active {
+    background: rgba(106, 160, 190, 0.5) !important;
+}
+
+.leaderboard-area .lbtable thead tr th {
+    background: rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaderboard-area table.dataTable tbody tr:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.leaderboard-area thead tr th.sorting_asc,
+.leaderboard-area thead tr th.sorting_desc,
+.leaderboard-area th.sorting_asc,
+.leaderboard-area th.sorting_desc,
+.leaderboard-area .sorting_1 {
+    background: rgba(106, 160, 190, 0.5) !important;
+}
+
+/* Blog. */
+
+.blog-box a,
+.blog-box a:hover,
+.blog-box a:visited,
+.blog-box,
+.blog-subbox{
+    color: #FFFFFF !important;
+}
+
+.blog-box .right-area h2 {
+    border-bottom: 2px solid #FFFFFF;
+}
+
+.blog-box .left-area,
+.blog-box .right-area {
+    padding: 1em;
+}
+.blog-box .left-area {
+    width: 47em;
+}
+
+.blog-box .right-area {
+    width: 24em;
+}
+
+/*
+ *  Datetimepicker overrides.
+ *  The colors are based on the clos-buttons.css file.
+ */
+.ranges li.active {
+    background-color: #8AAD96;
+    border: 0px !important;
+}
+
+.ranges li:hover {
+    background-color: #97BEA5;
+    border: 0px !important;
+}
+
+.ranges li {
+    background-color: #E4E4E4;
+    border: 0px !important;
+    color: #4E4E4E;
+}
+
+.daterangepicker td.active {
+    background-color: #8AAD96;
+}
+
+.daterangepicker td.active:hover {
+    background-color: #97BEA5;
+}

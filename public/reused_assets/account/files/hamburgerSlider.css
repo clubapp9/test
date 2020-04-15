@@ -1,0 +1,266 @@
+.hamburger-slider-button {
+    background: none;
+    position: fixed;
+    font-size: 2em;
+    cursor: pointer;
+    padding: 0.35em;
+    width: 1.15em;
+    height: 1em;
+    box-sizing: unset !important;
+}
+
+.hamburger-slider-button img {
+    box-sizing: unset;
+    width: 1em;
+}
+
+.hamburger-slider-button.open {
+    border-bottom: none;
+    border-right: none;
+    box-shadow: none;
+}
+
+.hamburger-slider-top-area {
+    float: left;
+}
+
+.webui-logo-header {
+    margin-top: 50px !important;
+}
+
+/* Hamburger Slider Actions. */
+
+.hamburger-slider-actions {
+    float: left;
+    width: 100%;
+    height: 2em;
+    border-bottom: 1px solid #EBEBEB;
+    padding: 0.4em 0.5em;
+    display: inline-block;
+}
+
+.hamburger-slider-close-button {
+    border: 1px solid #FFFFFF;
+    font-weight: normal;
+    padding: 0.1em 0.5em 0.1em 0.3em;
+    width: auto;
+    cursor: pointer;
+}
+
+.hamburger-slider-close-button:hover {
+    border-bottom: 2px solid #EBEBEB;
+}
+
+.hamburger-slider-close-button .icon-remove {
+    margin: 0em;
+    -webkit-margin-before: 0.18em;
+    -webkit-margin-after: 0.18em;
+}
+
+.hamburger-slider-my-account-button {
+    border: 1px solid #FFFFFF;
+    font-weight: normal;
+    padding: 0.1em 0.5em 0.1em 0.3em;
+    width: auto;
+    cursor: pointer;
+}
+
+.hamburger-slider-my-account-button:hover {
+    border-bottom: 2px solid #EBEBEB;
+}
+
+.hamburger-slider-my-account-button a:hover,
+.hamburger-slider-my-account-button a:visited,
+.hamburger-slider-my-account-button a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.hamburger-slider-my-account-button .icon-user {
+    margin: 0em;
+    -webkit-margin-before: 0.18em;
+    -webkit-margin-after: 0.18em;
+}
+
+.hamburger-slider-sign-out-button {
+    border: 1px solid #FFFFFF;
+    font-weight: normal;
+    padding: 0.1em 0.5em 0.1em 0.3em;
+    width: auto;
+    cursor: pointer;
+    color: #000000;
+}
+
+.hamburger-slider-sign-out-button:hover {
+    border-bottom: 2px solid #EBEBEB;
+}
+
+.hamburger-slider-sign-out-button a:hover,
+.hamburger-slider-sign-out-button a:visited,
+.hamburger-slider-sign-out-button a {
+    color: #000000;
+    text-decoration: none;
+}
+
+.hamburger-slider-sign-out-button .icon-off {
+    margin: 0em;
+    -webkit-margin-before: 0.18em;
+    -webkit-margin-after: 0.18em;
+}
+
+/* Hamburger Slider Menu. */
+
+.hamburger-slider-menu {
+    background: #FFFFFF;
+    position: fixed;
+    left: -20em;
+    width: 20em;
+    height: 100%;
+    overflow: auto;
+    z-index: 999;
+}
+
+.slide-open,
+.slide-open:hover,
+.slide-open:active,
+.slide-open:visited {
+    transition: .1s;
+    left: 0;
+    color: #43515A;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.slide-close,
+.slide-close:hover,
+.slide-close:active,
+.slide-close:visited {
+    transition: .1s;
+    left: -20em;
+    color: #43515A;
+    box-shadow: none;
+    border-right: none;
+}
+
+.hamburger-slider-links-box {
+    margin: 35px;
+}
+
+.sidebar-username-role-box {
+    width: 100%;
+    text-align: center;
+}
+
+.sidebar-username-role-box p {
+    line-height: 0.25em;
+}
+
+.display-name {
+    font-size: .8em;
+    font-weight: bold;
+}
+
+.role-name {
+    font-size: .9em;
+}
+
+.bottom-copyright {
+    background: #FFFFFF;
+    bottom: 0em;
+    font-size: 0.8em;
+    position: absolute;
+    text-align: center;
+    padding-top: 1em;
+    width: 100%;
+}
+
+.nav > li > a {
+    line-height: 1.2em;
+}
+
+.nav > li > a > span {
+    padding: 0em 0em .5em 0em;
+    border-bottom: 2px solid #FFFFFF;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+    background: none;
+    text-decoration: none;
+}
+
+.nav > li > a:hover > span,
+.nav > li > a:focus > span {
+    border-bottom: 2px solid #989898;
+}
+
+/* View History. */
+
+.account-history {
+    border-top: 1px solid #AEADAD;
+    margin: 1em;
+    padding-top: 1em;
+    display: inline-block;
+    width: 18em;
+    overflow: auto;
+}
+
+.account-history a {
+    text-decoration: none !important;
+}
+
+.account-history span {
+    color: #5E6E78;
+    font-size: 1.0em;
+}
+
+.account-history ul {
+    margin: 0em;
+    max-height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.account-history ul li:nth-child(even) {
+    background: #F1F1F1 !important;
+}
+
+.account-history ul li {
+    list-style: none;
+    background: #FFFFFF;
+    padding: 2px 10px;
+    margin: 1px 0px;
+    cursor: pointer;
+}
+
+.account-history ul li:hover {
+    border-left: 1px solid #AEADAD;
+    border-right: 1px solid #AEADAD;
+}
+
+.account-history ul li:active {
+    background: #FFFFFF;
+}
+
+.account-history ul li p {
+    font-size: 0.9em;
+    color: #5E6E78;
+    margin: 0px;
+}
+
+.my-view-history-refresh {
+    background-image: none !important;
+    background: #FFFFFF !important;
+    border: 1px solid #AEADAD !important;
+    border-radius: 0em !important;
+}
+
+@media all and (max-height: 800px) {
+    .hamburger-slider-menu {
+        overflow: auto;
+    }
+
+    .bottom-copyright {
+        position: fixed;
+        width: 25em;
+    }
+}

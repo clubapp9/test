@@ -1,0 +1,23 @@
+$(document).ready(function() {
+
+
+    $(document).on('click', '.get-receipt', function () {
+
+        if ($(this).hasClass("disabled")) {
+            reMsg("This payment has a receipt in the Files area.", "info");
+        } else {
+            $paymentCCid = $(this).parent().find('.paymentCCid').val();
+            $debtId = $(this).parent().find('.debtId').val();
+            getReceipt($debtId, $paymentCCid);
+        }
+    });
+
+    function getReceipt($debtId, $paymentCCid) {
+        $("<iframe/>").attr({
+            src: "/billing_api/get_receipt/" + $paymentCCid + "/" + $debtId,
+            style: "visibility:hidden;display:none"
+        }).appendTo('.hidden-download-box');
+    }
+
+
+});

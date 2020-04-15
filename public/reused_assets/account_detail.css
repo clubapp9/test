@@ -1,0 +1,325 @@
+/* Style for Account Search area. */
+
+/* General */
+
+* {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.account-search-area {
+    background: #FFFFFF;
+}
+
+.page-wrapper {
+    background:transparent;
+    width: 100%;
+    min-height: 200px;
+}
+
+.search-wrapper {
+    background:transparent;
+    width: 100%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.search-wrapper .content-title {
+    background:transparent;
+    padding: 0em;
+    border-bottom: 1px solid #555555;
+    color: #555555;
+}
+
+.declines-box,
+.queue-box {
+    display: none;
+}
+
+.results-welcome div {
+    display: inline-block;
+    width: auto;
+}
+
+.results-welcome div span i {
+    margin: 0em 1em;
+}
+
+.results-wrapper {
+    /*height: 100%;*/
+    overflow: auto;
+}
+
+.dataTables_scroll {
+    overflow: auto;
+}
+
+.sidebar {
+    margin: 0em;
+    padding: 2em;
+}
+
+.results {
+    background:transparent;
+    margin: 0em;
+}
+
+/* Column Text Widths */
+
+.note {
+    min-width: 400px;
+    text-align: left;
+}
+
+.actions {
+    float: right;
+}
+
+.note-overflow {
+    overflow: hidden;
+    height: 42px;
+    cursor: pointer;
+}
+
+.address {
+    min-width: 200px;
+}
+
+
+/* Search. */
+
+/* Sidebar. */
+.sidebar {
+    background: #f9f9f9 !important;
+    border-right: 1px solid #d8d8d8;
+    color: #000000;
+    -webkit-box-ordinal-group: 1;
+    -moz-box-ordinal-group: 1;
+    -ms-flex-order: 1;
+    -webkit-order: 1;
+    order: 1;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    width: 20%;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+
+    min-width: 240px;
+    max-width: 240px;
+}
+
+.sidebar label {
+    color: #000000;
+}
+
+.sidebar a {
+    color: #000000;
+    text-decoration: underline;
+    font-size: 0.9em;
+}
+
+.sidebar a:hover,
+.sidebar a:visited,
+.sidebar a:active {
+    color: #000000;
+    text-decoration: none;
+}
+
+#search_form {
+
+}
+
+.btn-search {
+    width: 100% !important;
+    font-weight: normal !important;
+}
+
+.search-loading-bar {
+    width: 80%;
+    margin: 0px auto;
+}
+
+.search-input {
+    box-shadow: none !important;
+    margin-top: 0.5em;
+    color: #555555;
+}
+
+.btn-half-width {
+    float: left;
+    width: 48% !important;
+    font-size: 16px !important;
+    font-weight: normal !important;
+}
+
+.btn-half-width-search {
+    float: left;
+    margin-top: 1px;
+    width: 91px !important;
+    font-weight: normal !important;
+}
+
+.clear_search {
+    margin-right: 1px;
+}
+
+.decline-link,
+.help-link {
+    margin-top: 1em;
+    display: inline-block;
+}
+
+.btn-half-width:nth-child(even) {
+}
+
+.btn-half-width:nth-child(odd) {
+    margin-right: 1px;
+}
+
+.search-advanced {
+    float: right;
+    margin: 0em 0em 1em 0em;
+}
+
+.search-slide {
+    display: none;
+}
+
+/* Results. */
+.results {
+    -webkit-box-ordinal-group: 2;
+    -moz-box-ordinal-group: 2;
+    -ms-flex-order: 2;
+    -webkit-order: 2;
+    order: 2;
+    min-width: 18em;
+    width: 100%;
+    -moz-box-flex: 1;
+}
+
+.results-loading {
+    background-repeat: repeat;
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.ajax-loader-message-wrapper {
+    position: relative;
+    margin: auto auto;
+    color: #000000;
+    text-align: center;
+    top: 50%;
+    height: 4em;
+    width: 20em;
+    margin: 2em auto;
+}
+
+.ajax-loader-bar {
+    background: url('../../images/ajax-loader-bar.gif');
+    width: 220px;
+    height: 19px;
+    display: block;
+    margin: auto auto;
+}
+
+.ajax-error {
+    display: none;
+}
+
+.ajax-loader-error-wrapper {
+    margin: auto auto;
+    top: 50%;
+    width: 20em;
+}
+
+
+
+/* Table Styling. */
+
+.search-results-table,
+.decline-results-table {
+    border-collapse: separate;
+    border-spacing: 1px 0px;
+    width: 100%;
+}
+
+.search-results-table tbody tr:nth-child(even),
+.decline-results-table tbody tr:nth-child(even) {
+    background: #FFFFFF;
+}
+
+.search-results-table tbody tr:nth-child(odd),
+.decline-results-table tbody tr:nth-child(odd) {
+    background: #F9F9F9;
+}
+
+.search-results-table td:hover,
+.decline-results-table td:hover {
+    background: #EEEEEE;
+}
+
+.search-results-table tr th,
+.decline-results-table tr th,
+.queue-results-table tr th {
+    color: #000000;
+    min-width: 100px;
+    border-bottom: 1px solid black;
+    cursor: pointer;
+    padding: 3px 18px 3px 10px;
+}
+
+.search-results-table tr th a,
+.queue-results-table tr th a {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.search-results-table tr td,
+.queue-results-table tr td {
+    padding: 10px 10px;
+}
+
+table.dataTable tr.odd td.sorting_1 {
+    background-color: #F9F9F9;
+}
+table.dataTable tr.even td.sorting_1 {
+    background-color: #F9F9F9;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_length label select {
+    border-radius: 0px !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    height: 1.5em !important;
+}
+
+.dataTables_length label select {
+    height: 2em !important;
+}
+
+.debtor-link i {
+    margin: 2px 2px !important;
+}
+
+.paginate_button:hover {
+    background: #262525 !important;
+    border: 1px solid #262525 !important;
+    color: #000000 !important;
+}
+
+.paginate_button.current {
+    background: #DCDCDC !important;
+    border: 1px solid #DCDCDC !important;
+}
+
+table.dataTable thead th {
+    font-weight: normal !important;
+}

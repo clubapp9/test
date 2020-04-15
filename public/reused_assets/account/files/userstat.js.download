@@ -1,0 +1,29 @@
+// Variables for userstat function.
+userstatWorked = false;
+focusSeconds = 0;
+
+window.setInterval(function(){
+    if (document.hasFocus()) {
+        focusSeconds++;
+    }
+}, 1000);
+
+function userstat() {
+    elapsedSecondsTime = focusSeconds;
+
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/userstat/" + userstatWorked.toString() + "/" + elapsedSecondsTime.toString(),
+        timeout: 20000,
+        success: function(data) {
+        },
+        error: function (xhr, ajaxSetting, thrownError) {
+            console.log(xhr);
+            console.log(ajaxSetting);
+            console.log(thrownError);
+        }
+    });
+
+    focusSeconds = 0;
+    if (userstatWorked === false) { userstatWorked = true; }
+}

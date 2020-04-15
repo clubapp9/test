@@ -1,0 +1,122 @@
+$(document).ready(function() {
+
+    $(document).on('click', '.file-new-template', function () {
+        showFileTemplates();
+    });
+
+    $(document).on('click', '.template-box', function () {
+        genTemplateToFile($(this), $(this).find('.template-filename').val());
+    });
+
+    $(document).on('click', '.download-letter', function(){
+        downloadLetter($(this));
+    });
+
+    function showFileTemplates() {
+        $.ajax({
+            type: "GET",
+            url: "/letters/api/list_templates",
+            timeout: genAjaxTimeout,
+            beforeSend: function () {
+                showLoadingDialog();
+            },
+            success: function (data) {
+                if (data.success) {
+                    viewTemplatesTemplate = Handlebars.compile($(document).find("#viewtemplates-modal-template").html());
+                    $('.viewtemplates-template-box').html(viewTemplatesTemplate(data));
+                    showTemplatesDialog($(document).find('#view-templates-dialog'));
+                } else {
+                    reMsg('Template list not able to load - please contact support.', 'error');
+                }
+
+            },
+            complete: function () {
+                removeLoadingDialog();
+            }
+        });
+    }
+
+    function genTemplateToFile($thisButton, templateFilename) {
+
+        var $pathName = $(location).attr('pathname');
+        $pathName.indexOf(1);
+        $pathName.toLowerCase();
+        var $where = $pathName.split('/')[1];
+
+        switch($where) {
+            case 'billing_ui':
+                var debtId = $(document).find('.view-files-dialog').find('#files_account_id').val();
+                break;
+            case 'collector_ui':
+                var debtId = $(document).find('#account_id').val();
+                break;
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "/letters/api/gen_letter/?debt_id=" + debtId + "&template_filename=" + templateFilename,
+            timeout: genAjaxTimeout,
+            beforeSend: function () {
+                showLoadingDialog();
+            },
+            success: function (data) {
+                if (data.success) {
+                    let buttonHTML = "" +
+                        "<div>" +
+                        "   <button class=\"btn-clos-lightgrey download-letter\"><i class=\"icon-download-alt\"></i>Download letter \"" + data.letter_file_name + "\".</button>" +
+                        "   <input type=\"hidden\" name=\"letter_file_name\" value=\"" + data.letter_file_name + "\">" +
+                        "</div>";
+
+                    toastr["success"]("<div>" + data.message + buttonHTML, "", {
+                        'timeOut': 0,
+                        "closeButton": true,
+                        "tapToDismiss": false,
+                        "showDuration": "20000",
+                    });
+
+                } else {
+                    //reMsg('Template list not able to load - please contact support.', 'error');
+                }
+
+            },
+            complete: function () {
+                removeLoadingDialog();
+            }
+        });
+
+    }
+
+    function downloadLetter($thisButton) {
+        let debtId = $(document).find('#account_id').val();
+        let filename = $thisButton.parent().find('input[name="letter_file_name"]').val();
+
+        window.open("/collector_api/download_file/" + debtId + "/" + filename, "_blank");
+
+        toastr.clear($thisButton.closest('.toast'));
+    }
+
+    function showTemplatesDialog($thisDialog) {
+        $thisDialogClone = $($thisDialog).clone();
+        $thisDialogClone.dialog({
+            position:   {my: "center", at: "center"},
+            modal:      true,
+            width:      780,
+            maxHeight:  $(window).height() * 0.9,
+            resizable: true,
+            draggable:  true,
+            buttons: {
+                "Close": {
+                    "text": "Close",
+                    "class": "btn-clos-lightgrey btn-clos-small",
+                    click: function(){
+                        $(this).dialog("close");
+                        refreshFileList();
+                    }
+                }
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+        return $thisDialogClone;
+    }
+
+});

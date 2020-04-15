@@ -1,0 +1,72 @@
+$(document).ready(function() {
+    $hamburgerSliderButton = $('.hamburger-slider-button');
+    $hamburgerSliderCloseButton = $('.hamburger-slider-close-button');
+    $menu = $(document).find('.hamburger-slider-menu');
+
+
+    // Close menu when not clicking the button or the menu area.
+    $(document).click(function(e) {
+        e.stopPropagation();
+        if ($hamburgerSliderButton.has(e.target).length == 0 && $menu.has(e.target).length == 0) {
+            if ($menu.hasClass('slide-open')) {
+                $(document).find('.hamburger-slider-button').show();
+                $menu.removeClass('slide-open');
+                $menu.addClass('slide-close');
+            }
+        }
+    });
+
+    $hamburgerSliderButton.on('click', function () {
+        $(document).find('.hamburger-slider-button').hide();
+        $menu.removeClass('slide-close');
+        $menu.addClass('slide-open');
+    });
+
+    $hamburgerSliderCloseButton.on('click', function(){
+        $(document).find('.hamburger-slider-button').show();
+        $menu.removeClass('slide-open');
+        $menu.addClass('slide-close');
+    })
+
+    searchViewHistoryTemplate = Handlebars.compile($("#view-history-template").html());
+    getViewHistory();
+    /*$(document).on('click', '.my-view-history-refresh', function(){
+        getViewHistory();
+    });*/
+    $(document).on('click', '.debtor-link', function(){
+        getViewHistory();
+    });
+
+    setViewHistoryHeight();
+    $(window).resize(function() {
+        setViewHistoryHeight();
+    });
+
+});
+
+function setViewHistoryHeight() {
+    if ($('.hamburger-slider-menu').height() < 800) {
+        $('.account-history').height('auto');
+    } else {
+        $('.account-history').height(window.innerHeight - $('.hamburger-slider-top-area').height() - 128);
+    }
+}
+
+function getViewHistory() {
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/get/history",
+        timeout: genAjaxTimeout,
+        beforeSend: function(){
+            $('.account-history').html(loadingBar(90));
+        },
+        success: function(data) {
+            $('.account-history').html(searchViewHistoryTemplate(data));
+        },
+        error: function(xhr, ajaxSetting, thrownError){
+            errorString = '<span style="color: #FFFFFF;">View History Error: ' + thrownError + '</span>';
+            toastr.error(errorString);
+            $('.account-history').html(errorString);
+        }
+    });
+}

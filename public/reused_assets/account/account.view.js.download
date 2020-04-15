@@ -1,0 +1,29 @@
+$(document).ready(function() {
+    function showThisDialog($thisDialog) {
+        var $maxWidth = $thisDialog.find('.window-width').val();
+        $maxWidth = ($maxWidth > 0) ? $maxWidth : 500;
+        $thisDialogClone = $($thisDialog).clone();
+        $thisDialogClone.dialog({
+            position: {my: "center", at: "center"},
+            modal: true,
+            width: $(window).width() > $maxWidth ? $maxWidth : $(window).width() * 0.9,
+            minWidth: 300,
+            maxHeight: $(window).height() * 0.9,
+            draggable: true
+        });
+        $('.ui-dialog-titlebar-close').remove();
+        // Datepicker.
+        $thisDialogClone.find('.time').timepicker({
+            'showDuration': true,
+            'timeFormat': 'g:ia'
+        });
+        $thisDialogClone.find('.date').datepicker({
+            'format': 'yyyy-m-d',
+            'autoclose': true
+        });
+
+        //fillFormWithSubmission();
+
+        return $thisDialogClone;
+    }
+});

@@ -1,0 +1,229 @@
+$(document).ready(function() {
+    /*jsonData = new Object();
+    locationName = $('#location_name').val();
+    accountId = $('#account_id').val();
+    accountName = $('#account_name').val();
+    paymentFormArray = new Array;
+    $clonedDialog = null;*/
+
+    $loadingDialog = null;
+
+    /**
+     * When user clicks the Files link on the top left basic profile
+     * box, show a modal of the directory of this account.
+     */
+    $(document).on('click', '.view-files-basic', function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: "/collector_api/files/" + accountId,
+            timeout: 20000,
+            beforeSend: function(){
+                showLoadingDialog();
+            },
+            success: function(data) {
+                data.accountId = $('#account_id').val();
+                viewfilesTemplate = Handlebars.compile($(document).find("#viewfiles-modal-template").html());
+                $('.viewfiles-template-box').html(viewfilesTemplate(data));
+                showFilesDialog($(document).find('.view-files-dialog'));
+                setModalTitle(accountId);
+            },
+            complete: function() {
+                currentDirectory = getCurrentDirectory();
+                $iframe = $(document).find('.view-files-dialog').find('.upload-file-iframe');
+                $iframe.attr('src', '/collector_ui/upload_file_iframe/?current_directory=' + currentDirectory);
+                removeLoadingDialog();
+            },
+            error: function (xhr, ajaxSetting, thrownError) {
+                //handleAjaxError(ajaxSetting);
+            }
+        });
+    });
+
+    /**
+     * This allows the user to navigate the filesystem of the account
+     * directory.
+     */
+    // Open Directory.
+    $(document).on('click', '.file-object-type-name', function(){
+        currentDirectory = getCurrentDirectory();
+        objectType = $(this).parent().parent().find(".object-type").val();
+        objectName = $(this).parent().parent().find(".object-name").val();
+
+        if ("d" === objectType) {
+            $.ajax({
+                type: "GET",
+                url: "/collector_api/files/" + currentDirectory + "/" + objectName,
+                timeout: 20000,
+                beforeSend: function() {
+                    showLoadingDialog();
+                },
+                success: function(data) {
+                    data.accountId = $('#account_id').val();
+                    $('.viewfiles-template-box').html(viewfilesTemplate(data));
+                    setModalTitle(currentDirectory + "/" + objectName);
+                },
+                complete: function() {
+                    /*
+                     currentDirectory = $(document).find('.view-files-dialog').find(".directory").html();
+                     $iframe = $(document).find('.view-files-dialog').find('.upload-file-iframe');
+                     */
+
+                    $iframe = $('.ui-dialog .view-files-dialog .upload-file-box').find('.upload-file-iframe');
+                    $iframe.attr('src', '/collector_ui/upload_file_iframe/?current_directory=' + getCurrentDirectory());
+                    removeLoadingDialog();
+                },
+                error: function (xhr, ajaxSetting, thrownError) {
+                    //handleAjaxError(ajaxSetting);
+                }
+            });
+        } else if ("f" === objectType) {
+            window.open("/collector_api/view_file/" + currentDirectory + "/" + objectName, "_blank");
+        }
+    });
+
+    // View File.
+    $(document).on('click', '.file-view', function(){
+        currentDirectory = getCurrentDirectory();
+        objectType = $(this).parent().parent().find(".object-type").val();
+        objectName = $(this).parent().parent().find(".object-name").val();
+        if ("f" === objectType) {
+            window.open("/collector_api/view_file/" + currentDirectory + "/" + objectName, "_blank");
+        }
+    });
+
+    // Download file.
+    $(document).on('click', '.file-dl', function(){
+        currentDirectory = getCurrentDirectory();
+        objectType = $(this).parent().parent().find(".object-type").val();
+        objectName = $(this).parent().parent().find(".object-name").val();
+        if ("f" === objectType) {
+            window.open("/collector_api/download_file/" + currentDirectory + "/" + objectName, "_blank");
+        }
+    });
+
+    // Go back a directory.
+    $(document).on('click', '.file-back', function(){
+        currentDirectory = getCurrentDirectory();
+        directory = currentDirectory.split("/");
+        directory.pop();
+        if (typeof directory === "array") {
+            directory.join("/");
+        }
+        setModalTitle(directory);
+        $.ajax({
+            type: "GET",
+            url: "/collector_api/files/" + directory,
+            timeout: 20000,
+            success: function(data) {
+                data.accountId = $('#account_id').val();
+                $('.viewfiles-template-box').html(viewfilesTemplate(data));
+            },
+            complete: function() {
+            },
+            error: function (xhr, ajaxSetting, thrownError) {
+                //handleAjaxError(ajaxSetting);
+            }
+        });
+    });
+
+    // Delete a file.
+    $(document).on('click', '.file-object-type-delete', function(){ deleteFile($(this).parent().parent()); });
+
+    // Refresh the file list.
+    $(document).on('click', '.file-list-refresh', function(){ refreshFileList(); });
+
+    // Show the upload form.
+    $(document).on('click', '.file-list-upload', function(){ $('.ui-dialog .view-files-dialog .upload-file-box').toggle(); });
+
+    // Show the delete button.
+    //$(document).on('mouseenter', '.viewfiles-template-box ul li', function(){ $(this).find('.file-object-type-delete').show(); });
+
+    // Hide the delete button.
+    //$(document).on('mouseleave', '.viewfiles-template-box ul li', function(){ $(this).find('.file-object-type-delete').hide(); });
+
+    //$(document).on('mouseenter', '.viewfiles-template-box ul li', function(){ $(this).find('.file-object-type-delete').show(); });
+
+    //$(document).on('mouseleave', '.viewfiles-template-box ul li', function(){ $(this).find('.file-object-type-delete').hide(); });
+});
+
+function refreshFileList() {
+    $(document).find('.view-files-dialog').find('.viewfiles-template-box ul').html('<li>Refreshing list...</li>');
+    currentDirectory = getCurrentDirectory();
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/files/" + currentDirectory,
+        timeout: 20000,
+        beforeSend: function(){
+            showLoadingDialog();
+        },
+        success: function(data) {
+            data.accountId = $('#account_id').val();
+            $('.viewfiles-template-box').html(viewfilesTemplate(data));
+        },
+        complete: function() {
+            removeLoadingDialog();
+            $iframe = $(document).find('.view-files-dialog').find('.upload-file-iframe');
+            $iframe.attr('src', '/collector_ui/upload_file_iframe/?current_directory=' + currentDirectory);
+        }
+    });
+}
+
+function toggleFileUploadBox() {
+    $(document).find('.view-files-dialog').find('.upload-file-box').toggle();
+}
+
+
+function deleteFile($thisParent) {
+    userstat();
+    currentDirectory = getCurrentDirectory();
+    objectName = $thisParent.find(".object-name").val();
+    
+    response = confirm('Are you sure you want to delete "' + objectName + '" from this directory?');
+    if (true === response) {
+        $.ajax({
+            type: "POST",
+            url: "/collector_api/delete_file/",
+            data: {
+                current_directory: currentDirectory,
+                object_name: objectName,
+                ci_csrf_token:  $('[name="ci_csrf_token"]').val()
+            },
+            timeout: 20000,
+            beforeSend: function() {
+                $(document).find('.view-files-dialog').find('.viewfiles-template-box ul').html('<li>Waiting for response...</li>');
+            },
+            success: function(data) {
+                if (!data) {
+                    alert('There was an error deleting the file.');
+                }
+            },
+            complete: function() {
+                refreshFileList();
+            }
+        });
+    }
+    return response;
+}
+
+function showFilesDialog($thisDialog) {
+    $thisDialogClone = $($thisDialog).clone();
+    $thisDialogClone.dialog({
+        position:   {my: "center", at: "center"},
+        modal:      true,
+        width:      800,
+        maxHeight:  $(window).height() * 0.9,
+        resizable: true,
+        draggable:  true
+    });
+    $('.ui-dialog-titlebar-close').remove();
+    return $thisDialogClone;
+}
+
+function getCurrentDirectory() {
+    return $(document).find('.view-files-dialog').find(".directory-path").html();
+}
+
+function setModalTitle(directory) {
+    $(document).find('.ui-dialog-title').html('Files - ' + directory);
+}

@@ -1,0 +1,71 @@
+$(document).ready(function() {
+
+    $('.email-assist-button').on('click', function(){
+        $.ajax({
+            type: "GET",
+            url: "/collector_api/email_assist/get_rec_list",
+            timeout: 20000,
+            success: function(data) {
+                $emailAssistDialog = $('#email-assist-dialog').clone();
+                emailAssistListTemplate = Handlebars.compile($(document).find("#email-assist-list-template").html());
+                $emailAssistDialog.find('.select-user-box').html(emailAssistListTemplate(data));
+                $emailAssistDialog.dialog({
+                    position: {my: "center", at: "center"},
+                    modal: true,
+                    width: 500,
+                    minWidth: 500,
+                    maxHeight: $(window).height() * 0.9,
+                    draggable: true
+                });
+
+                $('.send-email-assist').on('click', function(){
+                    $button = $(this);
+                    $button.closest('.button-container').hide();
+                    $(document).find('.email-assist-progress-bar').show();
+
+                    $emailassistform = $emailAssistDialog.find('#email_assist_form');
+                    if ('default' == $emailassistform.find('.email-to').val()) {
+                        $(document).find('.send-to-error').show();
+                        $emailAssistDialog.find('.email-to').css('background-color', '#FFBABA;');
+                        $button.closest('.button-container').show();
+                        $('.email-assist-progress-bar').hide();
+                    } else {
+                        $(document).find('.send-to-error').hide();
+                        $.ajax({
+                            type: "POST",
+                            url: "/collector_api/email_assist/send_email",
+                            data: $emailassistform.serializeArray(),
+                            timeout: 20000,
+                            success: function(data) {
+                                if (data.success == true) {
+                                    toastr.success(data.message);
+                                    $emailAssistDialog.dialog('close');
+                                    loadTemplates();
+                                } else {
+                                    toastr.error("An API error has occured. (" + data.message + ")");
+                                    $button.closest('.button-container').show();
+                                    $('.email-assist-progress-bar').hide();
+                                }
+                            },
+                            error: function (xhr, ajaxSetting, thrownError){
+                                toastr.error("An API error has occured. (" + xhr + ") (" + ajaxSetting + ") (" + thrownError + ")");
+                                $button.closest('.button-container').show();
+                                $('.email-assist-progress-bar').hide();
+                            },
+                            complete: function(){
+                                $('.email-assist-progress-bar').hide();
+                                $(document).find('.send-to-error').hide();
+                            }
+                        });
+                    }
+
+                });
+
+            },
+            error: function (xhr, ajaxSetting, thrownError){
+                toastr.error("An API error has occured. (" + xhr + ") (" + ajaxSetting + ") (" + thrownError + ")");
+            }
+        });
+        return false;
+    });
+});

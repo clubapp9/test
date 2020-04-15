@@ -1,0 +1,11 @@
+// Any Bootstrap or FontAwesome-specific variables added here will overwrite the defaults.
+@import "variable-overrides";
+
+@import "../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import '../../../../node_modules/font-awesome/scss/font-awesome';
+@import '../../../../resources/assets_to_build/css/custom';
+
+// Front-end SCSS goes here.
+.user-profile-image {
+  max-width:200px;
+}

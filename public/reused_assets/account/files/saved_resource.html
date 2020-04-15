@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)http://192.168.0.209/collector_ui/upload_file_iframe/?current_directory=293960 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title></title>
+  </head>
+  <body>
+    <style type="text/css">
+        p {
+            font-family: Verdana, sans-serif;
+            padding: 10px 0px;
+            width: 100%;
+            text-align: center;
+        }
+        form {
+            text-align: center;
+        }
+        .form-error {
+            color: #D8000C !important;
+            background-color: #FFBABA !important;
+        }
+        .btn-browse {
+            background: #FFFFFF;
+            color: #000000;
+            cursor: pointer;
+        }
+        .btn-clos-green {
+            background: #8AAD96;
+            border: 0em;
+            border-radius: 8px;
+            padding: 1em 2em;
+            color: #FFFFFF;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-clos-green:hover {
+            background: #97BEA5;
+        }
+
+        .btn-clos-lightgrey {
+            background: #D8D8D8;
+            border: 0em;
+            border-radius: 8px;
+            padding: 1em 2em;
+            color: #000000;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .btn-clos-lightgrey:hover {
+            background: #E2E2E2;
+        }
+
+        .btn-clos-small {
+            padding: 0.5em 1em;
+        }
+
+        .btn-browse, .btn-flat-grey {
+            border: 0 none;
+            border-radius: 8px;
+            color: #000000;
+            padding: 12px 20px;
+            font-size: 0.8em !important;
+            font-weight: normal !important;
+            margin-right: 5px; 
+            cursor: pointer;
+        }
+    </style>
+            
+        <form action="http://192.168.0.209/collector_api/upload_file?current_directory=293960" method="post" accept-charset="utf-8" id="upload_file_form" enctype="multipart/form-data"><div style="display:none">
+<input type="hidden" name="ci_csrf_token" value="0b0df449a08b72dba3b77c4e8e9efe72">
+</div>                    <p>Select a file to upload to the current directory.</p>
+                <input type="file" class="userfile btn-browse btn-clos-lightgrey" name="userfile" size="20">
+        <input type="hidden" class="current_location " name="current_location" value="293960">
+        <input type="submit" class="upload_file_submit btn-clos-lightgrey" value="Upload File">
+    </form>
+    <script src="jquery-1.7.2.min.js.download"></script>
+    <script type="text/javascript">
+        jQuery('#upload_file_form').submit(function(){ parent.userstat(); });
+    </script>
+  
+
+</body></html>

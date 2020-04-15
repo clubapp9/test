@@ -1,0 +1,143 @@
+.files-list-box {
+    max-height: 400px;
+    overflow: auto;
+}
+
+.files-list-box table {
+    width: 100%;
+}
+
+.files-list-box table thead tr th {
+    text-align: left;
+    font-weight: normal;
+}
+
+.files-list-box table tbody tr:hover {
+    background-color: #EFEFEF;
+}
+
+.files-list-box table tbody tr td span.file-object-type-name {
+    cursor: pointer;
+}
+
+.files-list-box table tbody tr td span.file-object-type-name:hover {
+    text-decoration: underline;
+}
+
+.ui-dialog .account-number-title .directory.label-clos {
+    font-size: 1rem;
+}
+
+.files-list-box table tbody tr td span.file-object-type-name,
+.files-list-box table tbody tr td span.file-object-type-size,
+.files-list-box table tbody tr td span.file-object-type-modified,
+.file-back span {
+    padding-top: 6px;
+    display: inline-block;
+}
+
+.account-number-title .directory-folder {
+    font-weight: normal;
+}
+
+.file-object-type-f {
+    background-image: url('../images/document-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    display: inline-block;
+    width: 20px;
+    height: 22px;
+}
+
+.file-object-type-d {
+    background-image: url('../images/folder-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 24px 24px;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+}
+
+/* From account_view.css . */
+
+div.file-object {
+    background-image: url("../../images/glyphicons-halflings.png");
+    background-repeat: no-repeat;
+    margin: 4px 0px 4px 0px;
+    line-height: 11px;
+    vertical-align: text-top;
+}
+
+.file-object-type-action-d {
+    background-position: -265px -98px;
+    display: inline-block;
+    height: 11px;
+    width: 12px;
+}
+
+.file-object-type-action-f {
+    background-position: -97px -25px;
+    display: inline-block;
+    height: 11px;
+    width: 12px;
+}
+
+/*.file-object-type-up-directory {
+    background-position: -241px -98px;
+    display: inline-block;
+    height: 11px;
+    width: 12px;
+}*/
+
+.file-object-type-delete {
+    background-position: -169px -97px;
+    height: 13px;
+    width: 12px;
+}
+
+.file-view,
+.file-dl,
+.file-object-type-delete {
+    width: 1.8rem;
+    height: 1.5rem;
+    margin-top: 0.1rem;
+    float: right;
+}
+
+.view-files-dialog li {
+    line-height: 28px;
+}
+
+.view-files-dialog .actions {
+    float: right;
+    margin-left: 1rem;
+}
+
+
+.file-download-iframe {
+    display: none;
+}
+
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 6px 2px 6px 4px;
+}
+
+/* File upload. */
+
+.upload-file-box {
+    border-top: 1px solid #D0D0D0;
+    margin: 10px 0px;
+    display: none;
+}
+
+.notes-template-box {
+    width: 100%;
+}
+
+table.dataTable.no-footer {
+    border-bottom: 0px !important;
+}
+
+.ui-dialog-titlebar-close {
+    display: none !important;
+}

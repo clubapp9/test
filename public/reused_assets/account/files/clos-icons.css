@@ -1,0 +1,188 @@
+.credit-card-icon-white {
+    background-image: url('../images/creditcard-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.files-icon-white {
+    background-image: url('../images/filesicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.schedule-icon-white {
+    background-image: url('../images/scheduleicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.doublecheck-icon-white {
+    background-image: url('../images/doublecheckicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.save-icon-white {
+    background-image: url('../images/saveicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.refresh-icon-white {
+    background-image: url('../images/refreshicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 1px 5px;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+}
+
+.add-icon-white {
+    background-image: url('../images/addicon-white.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+}
+
+.add-icon-dark {
+    background-image: url('../images/addicon-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+}
+
+.settings-icon-dark {
+    background-image: url('../images/settings-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: 0px 0px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.thumbs-up-green {
+    background-image: url('../images/thumb_up_green.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 21px;
+}
+
+.thumbs-down-lightgrey {
+    background-image: url('../images/thumb_down_lightgrey.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 21px;
+}
+
+.check-circle-white {
+    background-image: url('../images/check_circle_white.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.check-circle-green {
+    background-image: url('../images/check_circle_green.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.x-circle-white {
+    background-image: url('../images/x_circle_white.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.document-outline-dark {
+    background-image: url('../images/document-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.folder-outline-dark {
+    background-image: url('../images/folder-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.cloud-download-outline-dark {
+    background-image: url('../images/cloud-download-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 20px 18px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 16px;
+    height: 22px;
+}
+
+.arrow-upward-outline-dark {
+    background-image: url('../images/arrow-upward-outline-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 22px 24px;
+    display: inline-block;
+    width: 20px;
+    height: 22px;
+}
+
+.file-icon-dark {
+    background-image: url('../images/file-icon-dark.svg');
+    background-repeat: no-repeat;
+    background-size: 16px 16px;
+    background-position: -2px 5px;
+    display: inline-block;
+    width: 12px;
+    height: 18px;
+}

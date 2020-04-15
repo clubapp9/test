@@ -1,0 +1,1101 @@
+$(document).ready(function() {
+    jsonData = new Object();
+    locationName = $('#location_name').val();
+    accountId = $('#account_id').val();
+    accountName = $('#account_name').val();
+    paymentFormArray = new Array;
+    $clonedDialog = null;
+    whichPaymentTypeModal = "credit-card";
+    $csrf = $('[name="ci_csrf_token"]').val();
+
+    handlebarHelpers();
+    loadTemplates();
+
+    document.title = accountId + " - " + accountName;
+
+    setThePaymentType();
+
+    /**************************************************************************
+     * Modals.
+     */
+    /**********************************************************************
+     * Plus Button.
+     *
+     * These are all together so that the modals, when opened, open fresh
+     * and are able to properly display in any resolution.
+     */
+    /**
+     * When the plus for an area is clicked, find the closest dialog
+     * and open it.
+     */
+    $(document).on('click', '.plus', function(){
+        var $thisDialog = $(this).closest('.has-modal').find('.dialog');
+        showThisDialog($thisDialog);
+    });
+
+    $(document).on('click', '.add-payment-basic', function(e){
+        e.preventDefault();
+        $('.payments-table').find('.plus').click();
+    });
+    $(document).on('click', '.view-payments-basic', function(e){
+        e.preventDefault();
+        $('.payments-table').find('.view-payments').click();
+    });
+
+
+    $(document).on('click', '.view-duplicates-matches', function(e){
+        e.preventDefault();
+        $thisDialog = $(this).parent().find('.duplicates-matches-dialog');
+        genSimilarAccountsDialog($thisDialog);
+    });
+
+    // Similar Accounts buttons.
+    $(document).on('click', '.duplicates-tab-button', function(){
+        $('.account-duplicates-area').show();
+        $('.duplicates-tab-button').removeClass('btn-clos-lightgrey');
+        $('.duplicates-tab-button').addClass('btn-clos-green');
+        $('.matches-tab-button').removeClass('btn-clos-green');
+        $('.matches-tab-button').addClass('btn-clos-lightgrey');
+        $('.account-matches-area').hide();
+    });
+    $(document).on('click', '.matches-tab-button', function(){
+        $('.account-matches-area').show();
+        $('.matches-tab-button').removeClass('btn-clos-lightgrey');
+        $('.matches-tab-button').addClass('btn-clos-green');
+        $('.duplicates-tab-button').removeClass('btn-clos-green');
+        $('.duplicates-tab-button').addClass('btn-clos-lightgrey');
+        $('.account-duplicates-area').hide();
+    });
+
+    /***********************************************************************
+     * View Payments.
+     */
+    $('.view-payments').on('click', function(e){
+        var $maxWidth = $(document).find('.viewpayments-list-template-box').find('.window-width').val();
+        //console.log($maxWidth);
+        $maxWidth = ($maxWidth > 0) ? $maxWidth : 500;
+        $viewPaymentsDialog = $('.view-payments-dialog').clone().dialog({
+            position:   {my: "center", at: "center"},
+            modal:      true,
+            width:      $(window).width() > $maxWidth ? $maxWidth : $(window).width() * 0.9,
+            minWidth:   440,
+            maxHeight:  $(window).height() * 0.9,
+            draggable:  true,
+            open: function(){
+                $(this).find('.datatable-viewpayments-modal').dataTable({
+                    'bFilter': false,
+                    'bPaginate': false,
+                    'bLengthChange': false,
+                    "bInfo" : false,
+                    'bDestroy': true,
+                    'iDisplayLength': 500,
+                    'order': [[0, 'desc']]
+                });
+            }
+        });
+        $('.ui-dialog-titlebar-close').remove();
+        e.preventDefault();
+    });
+
+    $(document).on('change', '.billing-address-select', function(){
+        var addr_id = this.value;
+        var result = $.grep(jsonData.payload.account.address, function(e){
+            return e.item_no === addr_id;
+        });
+        if (result) {
+            $('input[name=card_street1]').val(result[0].addr1);
+            $('input[name=card_street2]').val(result[0].addr2);
+            $('input[name=card_city]').val(result[0].city);
+            $('select[name="card_state"]').find('option[value="' + result[0].state + '"]').attr("selected",true);
+            $('input[name=card_zip]').val(result[0].zip);
+            $('input[name=payment_notes]').val(result[0].notes);
+        }
+    });
+
+    $(document).on('click', '.delete-payment', function(e){
+        e.preventDefault();
+        payment_id = $(this).parent().find('#payment_id').val();
+        if (confirm("Are you sure you want to delete this payment?")) {
+            userstat();
+            $.ajax({
+                type: "GET",
+                url: "/collector_api/account/delete_payment/" + payment_id,
+                timeout: 20000,
+                success: function(data) {
+                    if (data.deleted) {
+                        toastr.success("Payment Status set to 'DELETED'.");
+                        reloadPage();
+                    }
+                },
+                error: function (xhr, ajaxSetting, thrownError){
+                    toastr.error("An API error has occured. (" + xhr + ") (" + ajaxSetting + ") (" + thrownError + ")");
+                }
+            });
+        }
+    });
+
+    /***********************************************************************
+     * Payment Method Change.
+     */
+    $(document).on('change', '.card-which', function(){
+        $selection = $(this).val();
+        $parent = $(this).closest('.flex-container-modal');
+        if ($selection === 'add-card') {
+            $parent.find('.card-type').removeAttr('disabled');
+            $parent.find('.card-name').removeAttr('disabled');
+            $parent.find('.card-number').removeAttr('disabled');
+            $parent.find('.card-month').removeAttr('disabled');
+            $parent.find('.card-year').removeAttr('disabled');
+            $parent.find('.security-code').removeAttr('disabled');
+            $parent.find('.billing-address-select').removeAttr('disabled');
+            $parent.find('.card_street1').removeAttr('disabled');
+            $parent.find('.card_street2').removeAttr('disabled');
+            $parent.find('.card_city').removeAttr('disabled');
+            $parent.find('.card_state').removeAttr('disabled');
+            $parent.find('.card_zip').removeAttr('disabled');
+            $parent.find('.card_card_save_address_to_account').removeAttr('disabled');
+        } else {
+            $parent.find('.card-type').prop('disabled', true);
+            $parent.find('.card-name').prop('disabled', true);
+            $parent.find('.card-number').prop('disabled', true);
+            $parent.find('.card-month').prop('disabled', true);
+            $parent.find('.card-year').prop('disabled', true);
+            $parent.find('.security-code').prop('disabled', true);
+            $parent.find('.billing-address-select').prop('disabled', true);
+            $parent.find('.card_street1').prop('disabled', true);
+            $parent.find('.card_street2').prop('disabled', true);
+            $parent.find('.card_city').prop('disabled', true);
+            $parent.find('.card_state').prop('disabled', true);
+            $parent.find('.card_zip').prop('disabled', true);
+            $parent.find('.card_card_save_address_to_account').prop('disabled', true);
+        }
+    });
+
+    $(document).on('change', '.baccount-which', function(){
+        $selection = $(this).val();
+        $parent = $(this).closest('.flex-container-modal');
+        if ($selection === 'add-baccount') {
+            $parent.find('.baccount-name').removeAttr('disabled');
+            $parent.find('.routing-number').removeAttr('disabled');
+            $parent.find('.baccount-number').removeAttr('disabled');
+            $parent.find('.billing-address-select').removeAttr('disabled');
+            $parent.find('.card_street1').removeAttr('disabled');
+            $parent.find('.card_street2').removeAttr('disabled');
+            $parent.find('.card_city').removeAttr('disabled');
+            $parent.find('.card_state').removeAttr('disabled');
+            $parent.find('.card_zip').removeAttr('disabled');
+            $parent.find('.card_card_save_address_to_account').removeAttr('disabled');
+        } else {
+            $parent.find('.baccount-name').prop('disabled', true);
+            $parent.find('.routing-number').prop('disabled', true);
+            $parent.find('.baccount-number').prop('disabled', true);
+            $parent.find('.billing-address-select').prop('disabled', true);
+            $parent.find('.card_street1').prop('disabled', true);
+            $parent.find('.card_street2').prop('disabled', true);
+            $parent.find('.card_city').prop('disabled', true);
+            $parent.find('.card_state').prop('disabled', true);
+            $parent.find('.card_zip').prop('disabled', true);
+            $parent.find('.card_card_save_address_to_account').prop('disabled', true);
+        }
+    });
+
+    /* Manage cards. */
+
+    $(document).on('click', '.manage-credit-cards-link', function(e){
+        e.preventDefault();
+        if ($(".ui-dialog-content").dialog("close")) {
+            $(".ui-dialog-content").remove();
+            e.preventDefault();
+            $cardsDialog = $('#manage-cards-dialog').clone();
+            $cardsDialog.dialog({
+                modal: true,
+                position: ['center', 'center'],
+                width:'auto',
+                buttons: [
+                    {
+                        text: "Close",
+                        'class': 'btn-clos-lightgrey btn-clos-small',
+                        click: function() {
+                            reloadPage();
+                            $( this ).dialog( "close" );
+                        }
+                    }
+                ]
+            });
+            $(document).on('click', '.remove-card', function(){
+                $tokenId = $(this).parent().parent().find('.token-id').val();
+                $.ajax({
+                    type: "GET",
+                    url: "/collector_api/account/deactivate_card/" + $tokenId,
+                    timeout: 20000,
+                    success: function(data) {
+                        if (data.success) {
+                            toastr.success('Card has been deleted.');
+                        } else {
+                            toastr.error('Error deleting card.');
+                        }
+                    },
+                    complete: function() {
+                        reloadPage();
+                    },
+                    error: function (xhr, ajaxSetting, thrownError){}
+                });
+            });
+        }
+
+        return false;
+    });
+
+    /***********************************************************************
+     * Basic Save.
+     */
+    $(document).on('click', '#basicleft_save_button', function(event) {
+        userstat();
+        $.ajax({
+            type: "POST",
+            url: "/collector_api/account/save_basic",
+            data: $('#basicleft_form').serializeArray(),
+            timeout: 20000,
+            beforeSend: function(){
+
+            },
+            success: function(data) {
+                for (x = 0; x < data.result.length; x++) {
+                    //console.log(data.result[x]);
+                    if (data.result[x].attempt) {
+                        if (data.result[x].success) {
+                            toastr.success(data.result[x].field + " updated.");
+                        } else {
+                            toastr.error(data.result[x].field + " not updated.");
+                        }
+                    } else {
+                        if (data.result[x].field == 'Work List' && data.result[x].message != '') {
+                            toastr.error(data.result[x].field + " not updated. " + data.result[x].message);
+                        }
+                    }
+                }
+            },
+            complete: function() {
+                reloadPage();
+            },
+            error: function (xhr, ajaxSetting, thrownError){}
+        });
+        event.preventDefault();
+    });
+
+    /**
+     * Basic Cancel.
+     */
+    $(document).on('click', '#basicleft_cancel_button', function(event) { reloadPage(); });
+
+    /***********************************************************************
+     * Modal Add to Account.
+     */
+
+    $(document).on('click', '.payment-credit-tab', function(e){
+        $('.payment-credit-tab').removeClass('btn-clos-lightgrey');
+        $('.payment-credit-tab').addClass('btn-clos-green');
+        $(document).find('.payment-form-card').show();
+        $('.payment-ach-tab').removeClass('btn-clos-green');
+        $('.payment-ach-tab').addClass('btn-clos-lightgrey');
+        $(document).find('.payment-form-ach').hide();
+        whichPaymentTypeModal = "credit-card";
+        setThePaymentType();
+        e.preventDefault();
+    });
+
+    $(document).on('click', '.payment-ach-tab', function(e){
+        $('.payment-ach-tab').removeClass('btn-clos-lightgrey');
+        $('.payment-ach-tab').addClass('btn-clos-green');
+        $(document).find('.payment-form-ach').show();
+        $('.payment-credit-tab').removeClass('btn-clos-green');
+        $('.payment-credit-tab').addClass('btn-clos-lightgrey');
+        $(document).find('.payment-form-card').hide();
+        whichPaymentTypeModal = "baccount";
+        setThePaymentType();
+        e.preventDefault();
+    });
+
+    $(document).on('click', '.modal-save', function(event) {
+        userstat();
+
+        $addNew = $(this).hasClass('save_add_button');
+
+        if ($(this).closest('.dialog-secondary').length) {
+            $thisDialog = $(this).closest('.dialog-secondary');
+        } else {
+            $thisDialog = $(this).closest('.dialog');
+        }
+
+        successAddNew = false;
+        $paymentFormObject = $(this).closest('form');
+        $formType = $paymentFormObject.find('.submission_type').val();
+
+        /*
+            if add payment, then
+                If form valid
+                    false - show errors
+                    true - save form
+            else
+                save form
+            fi
+        */
+
+
+        if ('add_payment' == $formType) {
+            paymentFormArray = getFormFieldsAsObject($paymentFormObject);
+
+            $('.input-error').removeClass('input-error'); // Remove errors from form.
+
+            addPaymentErrorCheckResult = addPaymentErrorCheck(paymentFormArray);
+            if (true == addPaymentErrorCheckResult.errorState) {
+
+                emptyMsg = 'The red highlighted fields must be filled out before you add a payment.' + addPaymentErrorCheckResult.messages;
+                toastr.error(emptyMsg);
+
+                $thisDialog.find('.form-saving').hide();
+                $thisDialog.find('.form-group').show();
+                $thisDialog.find('.form-error').html(emptyMsg);
+                $thisDialog.find('.form-error').show();
+
+
+                // If the card dropdown is blank, log this.
+                if ('' == $paymentFormObject.find('.card-which').val()
+                    || '' == paymentFormArray['card_which']) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/general/log",
+                        data: {
+                            form: $paymentFormObject.serialize(),
+                            ci_csrf_token: $('[name="ci_csrf_token"]').val(),
+                            'error': 'There was an error adding the payment.  Contact support and tell them error code A.'
+                        },
+                        timeout: 20000
+                    });
+                }
+
+            } else {
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/collector_api/post/exists_duplicate_payment",
+                    data: {
+                        form: {
+                            'accountId': $paymentFormObject.find('[name="accountId"]').val(),
+                            'momentToProcess': $paymentFormObject.find('[name="run_date"]').val(),
+                            'amount': $paymentFormObject.find('[name="amount"]').val()
+                        },
+                        ci_csrf_token: $('[name="ci_csrf_token"]').val()
+                    },
+                    timeout: 45000,
+                    beforeSend: function(){
+                        showLoadingDialog();
+                    },
+                    success: function(data) {
+
+                        if (data.exists) {
+                            let list = '<table class="table"><thead><tr><th>Date</th><th>Collector</th><th>Card</th><th>Amount</th></tr></thead><tbody>';
+
+                            for (x = 0; x < data.list.length; x++) {
+                                list += '<tr><td>' + data.list[x]['momentToProcess'] + '</td><td>' + data.list[x]['collectorId'] + '</td><td>' + data.list[x]['CCnumMask'] + '</td><td>' + data.list[x]['amount'] + '</td></tr>';
+                            }
+                            list += '</tbody></table>'
+
+                            $thisDialog.find('.form-error').html('<p>' + data.message + '</p><p>Here is a list of duplicate payment(s):</p>' + list);
+                            $thisDialog.find('.form-error').show();
+                            reMsg(data.message, 'error');
+
+                        } else {
+
+
+                            $.ajax({
+                                 type: "POST",
+                                 url: "/collector_api/account/",
+                                 data: $paymentFormObject.serialize(),
+                                 timeout: 45000,
+                                 beforeSend: function() {
+                                     $thisDialog.find('.form-group').hide();
+                                     $thisDialog.find('.form-error').html('');
+                                     $thisDialog.find('.form-error').hide();
+                                     $thisDialog.find('.form-saving').show();
+                                     $(document).find('.button-container').hide();
+                                     $(document).find('.loading-image-box-buttons').show();
+                                 },
+                                 success: function(data) {
+                                     $thisDialog.find('.field_error').removeClass("field_error");
+                                     if (data.success) {
+
+                                         $thisDialog.find('.form-error').html('');
+                                         $thisDialog.find('.form-error').hide();
+
+                                         loadTemplates($thisDialog, $addNew);
+                                         successMessage(data.request_type)
+                                         if (data.active_token_id) {
+                                            setActiveTokenInDropdown(data.active_token_id);
+                                         }
+                                     } else {
+                                         console.log(data);
+                                         $thisDialog.find('.form-saving').hide();
+                                         $thisDialog.find('.form-group').show();
+                                         highlight_account_form_error_fields($thisDialog, data.error_fields);
+                                         $thisDialog.find('.form-error').html(get_account_form_errors(data.error_fields));
+                                         $thisDialog.find('.form-error').show();
+                                     }
+                                 },
+                                 complete: function(){
+                                     reloadPage();
+                                     $(document).find('.button-container').show();
+                                     $(document).find('.loading-image-box-buttons').hide();
+                                 },
+                                 error: function (xhr, ajaxSetting, thrownError) {
+                                     handleAjaxError(ajaxSetting);
+                                     $thisDialog.dialog('option', 'position', 'top');
+                                     console.log($thisDialog.find('.card-which').val());
+                                     $thisDialog.find('.form-saving').hide();
+                                     $thisDialog.find('.form-group').show();
+                                     $thisDialog.find('.form-error').show();
+                                 }
+                             });
+                        }
+
+
+
+                    },
+                    complete: function(){
+                        removeLoadingDialog();
+                    },
+                    error: function (xhr, ajaxSetting, thrownError) {
+                        handleAjaxError(ajaxSetting);
+                    }
+                });
+
+
+            }
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "/collector_api/account/",
+                data: $paymentFormObject.serialize(),
+                timeout: 45000,
+                beforeSend: function() {
+                    $thisDialog.find('.form-group').hide();
+                    $thisDialog.find('.form-error').hide();
+                    $thisDialog.find('.form-saving').show();
+                    $(document).find('.button-container').hide();
+                    $(document).find('.loading-image-box-buttons').show();
+                },
+                success: function(data) {
+                    $thisDialog.find('.field_error').removeClass("field_error");
+                    if (data.success) {
+                        loadTemplates($thisDialog, $addNew);
+                        successMessage(data.request_type)
+                        if (data.active_token_id) {
+                            setActiveTokenInDropdown(data.active_token_id);
+                        }
+                    } else {
+                        console.log(data);
+                        $thisDialog.find('.form-saving').hide();
+                        $thisDialog.find('.form-group').show();
+                        highlight_account_form_error_fields($thisDialog, data.error_fields);
+                        $thisDialog.find('.form-error').html(get_account_form_errors(data.error_fields));
+                        $thisDialog.find('.form-error').show();
+                    }
+                },
+                complete: function(){
+                    reloadPage();
+                    $(document).find('.button-container').show();
+                    $(document).find('.loading-image-box-buttons').hide();
+                },
+                error: function (xhr, ajaxSetting, thrownError) {
+                    handleAjaxError(ajaxSetting);
+                    $thisDialog.dialog('option', 'position', 'top');
+                    console.log($thisDialog.find('.card-which').val());
+                    $thisDialog.find('.form-saving').hide();
+                    $thisDialog.find('.form-group').show();
+                    $thisDialog.find('.form-error').show();
+                }
+            });
+        }
+
+        event.preventDefault();
+    });
+    /**
+     * Masking for credit card numbers.
+     */
+    $(document).on('change', 'select[name=card_type]', function(){
+        $cardTypeField = $(this);
+        $type = $cardTypeField.val().toLowerCase();
+        $creditCardField = $cardTypeField.closest('.ui-dialog').find('input[name=card_number]');
+        $creditCardField.mask(getCreditCardMask($type),{placeholder:"_"});
+    });
+    /***********************************************************************
+     * General.
+     */
+    /*
+     * If we don't close the dialogs this way, they will never go away.
+     * This is because we are cloning the dialogs.
+     *
+     * We clone to make sure the forms are always clear when opened.
+     */
+    $('.close-dialog-secondary').live('click', function(e){ $(this).closest('.dialog-secondary').remove(); });
+    $('.close-dialog').live('click', function(e){ $(this).closest('.dialog').remove(); });
+
+    /**
+     * On window resize, find the opened dialog and make sure it fits
+     * the page size.
+     */
+    /*$(window).resize(function() {
+        var $thisDialog = $(".ui-dialog:visible").find('.ui-dialog-content');
+        var $maxWidth = $thisDialog.find('.window-width').val();
+        $maxWidth = ($maxWidth > 0) ? $maxWidth : 500;
+        $($thisDialog).dialog({
+            width:      $(window).width() > $maxWidth ? $maxWidth : $(window).width() * 0.9,
+            position:   {my: "center", at: "center"},
+            maxHeight:  $(window).height() * 0.9
+        });
+    });*/
+
+    /**
+     * When the page scrolls, make sure the dialog stays in the middle
+     * of the page.
+     */
+    $(window).on('scroll', function(){
+        $($(".ui-dialog:visible").find('.ui-dialog-content')).dialog({
+            position:   {my: "center", at: "center"}
+        });
+    });
+});
+
+function basicLeftHide() {
+    $('.basicleft-template-box').html("<div class=\"loading-image-box\"><div class=\"loading-image\"></div></div>");
+}
+
+function basicRightHide() {
+    $('.basicright-template-box').html("<div class=\"loading-image-box\"><div class=\"loading-image\"></div></div>");
+}
+
+function hideTables(tableArray) {
+    $(document).find('.notes-table-header').hide();
+    $(document).find('.notes-table-scroll').hide();
+    $('.data-table').each(function(i, obj){
+        $(obj).hide();
+    });
+    $('.loading-image-box').show();
+}
+
+function showTables(tableArray) {
+    $('.loading-image-box').hide();
+    $(document).find('.notes-table-header').show();
+    $(document).find('.notes-table-scroll').show();
+    $('.data-table').each(function(i, obj){
+        $(obj).show();
+    });
+}
+
+function getCreditCardMask(type) {
+    // The reason Amex has a shorter number is it was originally like a diners card - for company expenses.
+    // As such it needed only an account number, not a bank number.
+    // It is referred to as a T&E card.
+    switch(type) {
+        case 'amex':
+            return "?9999-999999-99999";
+            break;
+        case 'visa':
+        case 'disc':
+        case 'mc':
+        default:
+            return "?9999-9999-9999-9999";
+            break;
+    }
+}
+
+function loadTemplates($thisDialog, $addNew) {
+    //hideTables();
+    accountId = $('#account_id').val();
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/account/get/" + accountId,
+        timeout: 20000,
+        success: function(data) {
+            if (data.success) {
+                jsonData = data;
+                if(jsonData['payload']['account']['phone'].length > 0) {
+                    phones = jsonData['payload']['account']['phone'];
+                    phones.forEach(function(num) {
+                        num.localtime = getLocalTimeFromPhone(num.phone);
+                    });
+                }
+
+                if (generateHandlebars(jsonData)) {
+                    if (jsonData.payload.account.similar_account_preload == true) {
+                        getSimilarAccounts(accountId);
+                    } else {
+                        $(document).find('.view-duplicates-matches').html('<i class="doublecheck-icon-white"></i>Similar Accounts').css('opacity', 1);
+                        $(document).on('click', '.view-duplicates-matches', function(){
+                            getSimilarAccounts(accountId, true)
+                        });
+                    }
+                }
+            } else {
+                toastr.error(data.message);
+            }
+        },
+        complete: function() {
+            makeTables();
+        },
+        error: function (xhr, ajaxSetting, thrownError) {
+            handleAjaxError(ajaxSetting);
+        }
+    }).done(function(){
+        showTables();
+        if (typeof($thisDialog) != "undefined") {
+            $thisDialog.dialog('close');
+        }
+        if ($addNew) {
+            showThisDialog($(document).find('.payments-table').find('#payment-dialog'));
+        }
+    });
+}
+
+function addPaymentErrorCheck(paymentFormArray) {
+    errorState = false;
+    messages = '';
+    if ('' == paymentFormArray['collector_id']) {
+        $(document).find('input[name=collector_id]').addClass('input-error');
+        errorState = true;
+        messages += "<br> - There must be a collector ID.";
+    }
+    if ('' == paymentFormArray['amount'] || paymentFormArray['amount'] <= 0) {
+        $(document).find('input[name=amount]').addClass('input-error');
+        errorState = true;
+        messages += "<br> - The amount must be greater than 0.";
+    }
+    if (false == isNumber(paymentFormArray['amount'])) {
+        $(document).find('input[name=amount]').addClass('input-error');
+        errorState = true;
+        messages += "<br> - The amount has to be a number, and only numbers.";
+    }
+    if ('' == paymentFormArray['run_date']) {
+        $(document).find('input[name=run_date]').addClass('input-error');
+        errorState = true;
+        messages += "<br> - There must be a run date.";
+    }
+    if ('' == paymentFormArray['run_time']) {
+        $(document).find('input[name=run_time]').addClass('input-error');
+        errorState = true;
+        messages += "<br> - There must be a run time.";
+    }
+
+    switch(whichPaymentTypeModal) {
+        case 'credit-card':
+            if ('' == paymentFormArray['card_which']) {
+                $(document).find('.card-which').addClass('input-error');
+                errorState = true;
+                messages += "<br> - You must select a card, or input a new one.";
+            }
+            break;
+        case 'baccount':
+            if ('' == paymentFormArray['baccount_which']) {
+                $(document).find('.baccount-which').addClass('input-error');
+                errorState = true;
+                messages += "<br> - You must select an account, or input a new one.";
+            }
+            break;
+    }
+
+    return {
+        'errorState': errorState,
+        'messages': messages
+    };
+}
+
+function handleAjaxError(ajaxSetting) {
+    hideTables();
+    $('.loading-image-box').hide();
+    if ("timeout" === ajaxSetting) { alert("The account request has timed out."); }
+    if ("parseerror" === ajaxSetting) { alert("There has been an API JSON parse error."); }
+}
+
+function handlebarHelpers() {
+    Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) { switch (operator) {
+        case '==': return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        case '===': return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        case '!=': return (v1 != v2) ? options.fn(this) : options.inverse(this);
+        case '<': return (v1 < v2) ? options.fn(this) : options.inverse(this);
+        case '<=': return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+        case '>': return (v1 > v2) ? options.fn(this) : options.inverse(this);
+        case '>=': return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+        default: return options.inverse(this);
+    }});
+}
+
+function getSimilarAccounts(accountId, lazyload) {
+    similarButton = $(document).find('.view-duplicates-matches');
+    $.ajax({
+        type: "GET",
+        url: "/collector_api/account/similar/" + accountId,
+        timeout: 60000,
+        beforeSend: function(){
+            $(document).find('.view-duplicates-matches').css('opacity', 0.5);
+        },
+        success: function(data) {
+            data.matchesSize = getObjectSize(data.matches);
+            data.duplicatesSize = getObjectSize(data.duplicates);
+            data.similarSize = data.matchesSize + data.duplicatesSize;
+            if (data.similarSize > 0) {
+                similarButton.html('<i class="doublecheck-icon-white"></i>Similar Accounts (' + data.similarSize + ')');
+                similarButton.fadeTo('slow', 1);
+                if (handlebarsRender("#similar-accounts-template", ".similar-accounts-box", data)) {
+                    if (true === lazyload) {
+                        genSimilarAccountsDialog($(document).find('.basicleft-template-box #basicleft_form').find('.duplicates-matches-dialog'));
+                    }
+                }
+            } else {
+                similarButton.html('<i class="doublecheck-icon-white"></i>Similar Accounts (None)');
+            }
+        },
+        error: function (xhr, ajaxSetting, thrownError) {
+            if (ajaxSetting === "timeout") {
+                similarButton.html('<i class="doublecheck-icon-white"></i>Similar Accounts (Timeout)');
+            } else {
+                handleAjaxError(ajaxSetting);
+            }
+        },
+        complete: function(){
+            return true;
+        }
+    });
+    return true;
+}
+
+function generateHandlebars(data) {
+    basicleftResults = new Object();
+    basicleftResults.info = data.payload.account.basic;
+    basicleftResults.debt_status_codes = data.payload.account.debt_status_codes;
+    basicleftResults.worklists = data.payload.account.worklists;
+
+    handlebarsRender("#basicnames-template", ".basic-names-box", { 'name1': basicleftResults.info.name1, 'name2': basicleftResults.info.name2 });
+    handlebarsRender("#basicleft-template", ".basicleft-template-box", basicleftResults);
+    handlebarsRender("#basicright-template", ".basicright-template-box", data.payload.account.basic);
+    handlebarsRender("#phonenumber-template", ".phonenumbers-template-box", data.payload.account.phone);
+    handlebarsRender("#address-template", ".address-template-box", data.payload.account.address);
+    handlebarsRender("#notes-template", ".notes-template-box", data.payload.account.notes);
+    handlebarsRender("#viewpayments-template", ".viewpayments-template-box", data.payload.account.payments);
+    handlebarsRender("#viewpayments-modal-address-select-template", ".billing-address-select", data.payload.account.address);
+    handlebarsRender("#viewpayments-list-template", ".viewpayments-list-template-box", data.payload.account.payments_list.list);
+    handlebarsRender("#managecards-modal-template", ".managecards-template-box", {'credit_cards': data.payload.account.tokenized_cards_list, 'baccounts': data.payload.account.tokenized_baccounts_list});
+    handlebarsRender("#employers-template", ".employers-template-box", data.payload.account.employers);
+
+    if ("object" != typeof $("#tokenized-cards-template").html()
+        && "object" != typeof $("#tokenized-ach-template").html()) {
+        tokenizedCardsTemplate = Handlebars.compile($("#tokenized-cards-template").html());
+        tokenizedACHTemplate = Handlebars.compile($("#tokenized-ach-template").html());
+        if ($('.card-which').html(tokenizedCardsTemplate(data.payload.account.tokenized_cards_list))
+            && $('.baccount-which').html(tokenizedACHTemplate(data.payload.account.tokenized_baccounts_list))) {
+            fillFormWithSubmission();
+        }
+    }
+
+    // Scroll the notes list once we load.
+    $notesObj = $(document).find(".notes-table-scroll");
+    $($notesObj).scrollTop($notesObj.prop("scrollHeight"));
+
+    return true;
+}
+
+function genSimilarAccountsDialog($thisDialog) {
+    $thisDialogClone = $($thisDialog).clone();
+    $thisDialogClone.dialog({
+        position:   {my: "center", at: "center"},
+        modal:      true,
+        width:      "auto",
+        draggable:  true,
+        buttons: [
+            {
+                text: "Close",
+                'class': 'btn-clos-green btn-clos-small',
+                click: function() {
+                    $( this ).dialog( "close" );
+                }
+            }
+        ],
+        title: "Account Matches / Duplicates"
+    });
+}
+
+// MEAT is the selector.
+// CASING is the div to render in.
+// SPICE is the data.
+// Yes, this is almost going too far.
+// Yes, this is a rendering meat joke.
+// Much later on, I wonder why I did this.
+// This is later on.  I wonder why I did this.
+function handlebarsRender(meat, casing, spice) {
+    // Object means it is not a string, which is what it will be if there is something there.
+    if ("object" != typeof $(meat).html()) {
+        var rendered = Handlebars.compile($(meat).html());
+        return $(casing).html(rendered(spice));
+    } else {
+        console.log("Was not able to load \"" + meat + "\".");
+    }
+    return false;
+}
+
+function makeTables() {
+    $phoneTable = $('.data-table.phonenumbers-template-box').dataTable({
+        'bFilter': false,
+        'bDestroy': true,
+        'iDisplayLength': 500,
+        'bLengthChange': false,
+        'bPaginate': false,
+        'bInfo' : false,
+        'order': [[3, 'asc']],
+        "aoColumns": [
+            { "bSortable": true },
+            { "bSortable": true },
+            { "bSortable": true },
+            { "bSortable": true },
+            { "bSortable": false },
+        ],
+        "columnDefs": [
+            { "width": "22%", "targets": 0},
+            { "width": "40%", "targets": 1},
+            { "width": "18%", "targets": 2},
+            { "width": "20%", "targets": 3}
+        ]
+    });
+
+    if ($(document).find('#edit_phone_number_dialog').val() == 'false') {
+        makeTableEdit($phoneTable, ".editable");
+    }
+
+    $(document).on('click', '.phone-number-search-button', function(){
+        $phone = $(this).parent().parent().find('#phone').text().replace(/[^0-9]/g, '');
+        switch($phone.length) {
+            case 7:
+                $formatted = $phone.replace(/(\d{3})(\d{4})/, '$1*$2');
+                break;
+            case 10:
+                $formatted = $phone.replace(/(\d{3})(\d{3})(\d{4})/, '$1*$2*$3');
+                break;
+            case 11:
+                $formatted = $phone.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '$1*$2*$3*$4');
+                break;
+            case 12:
+                $formatted = $phone.replace(/(\d{2})(\d{3})(\d{3})(\d{4})/, '$1*$2*$3*$4');
+                break;
+            default:
+                $formatted = $phone;
+        }
+        window.open("https://google.com/search?q=" + $formatted + "+phone", '_blank');
+    });
+
+    $addressTable = $('.data-table.address-template-box').dataTable({
+        'bFilter': false,
+        'bDestroy': true,
+        'iDisplayLength': 500,
+        'bLengthChange': false,
+        'bPaginate': false,
+        'bInfo' : false,
+        'order': [[2, 'asc']]
+    });
+    makeTableEdit($addressTable, ".editable");
+
+    $paymentsPdcTable = $('.data-table.viewpayments-template-box').dataTable({
+        'bFilter': false,
+        'bDestroy': true,
+        'iDisplayLength': 500,
+        'bLengthChange': false,
+        'bPaginate': false,
+        'bInfo' : false,
+        'order': [[1, 'desc']]
+    });
+
+    $employersTable = $('.data-table.employers-template-box').dataTable({
+        'bFilter': false,
+        'bDestroy': true,
+        'iDisplayLength': 500,
+        'bLengthChange': false,
+        'bPaginate': false,
+        'bInfo' : false,
+    });
+    makeTableEdit($employersTable, ".editable");
+    $(document).find('.notes-table-header').show();
+}
+
+function makeTableEdit(thisTable, extra) {
+    if ("undefined" == extra) {
+        extra = "";
+    }
+    $('td' + extra, thisTable.fnGetNodes()).editable(function(value, settings) {
+        $csrf = $('[name="ci_csrf_token"]').val();
+        $accountId = $('#account_id').val();
+        $element = this;
+        $elementId = $element.id;
+        $elementUid = $($element).closest('tr').find('#element_uid').val();
+        $infoType = $($element).closest('.info_area').find('#info_type').val();
+        $elementVal = value;
+        ajaxData = {
+            submission_type: "update",
+            info_type: $infoType,
+            accountId: $accountId,
+            key: $elementId,
+            val: $elementVal,
+            element_uid: $elementUid,
+            ci_csrf_token:  $csrf
+        };
+        $.ajax({
+            type: "POST",
+            url: "/collector_api/account/",
+            data: ajaxData,
+            timeout: 20000,
+            beforeSend: function() {
+                $($element).removeClass('field_success field_error field_warning').addClass('field_working').editable('disable');
+            },
+            success: function(data) {
+                if (data.success) {
+                    $($element).removeClass('field_working field_error field_warning').addClass('field_success').editable('enable');
+                } else {
+                    $($element).removeClass('field_working field_success field_warning').addClass('field_error').editable('enable');
+                }
+            },
+            error: function (xhr, ajaxSetting, thrownError){
+                $($element).removeClass('field_working field_success field_warning').addClass('field_error').editable('enable');
+            }
+        });
+        return(value);
+    }, {
+        cancel: 'Cancel',
+        submit: 'Save',
+        height: "20px"
+    });
+}
+
+// If they are adding a new card, and want to add another payment after adding the one before, then set the dropdown with the right token.
+function setActiveTokenInDropdown(activeTokenId) {
+    switch(whichPaymentTypeModal) {
+        case 'credit-card':
+            paymentFormArray['card_which'] = activeTokenId;
+            break;
+        case 'baccount':
+            paymentFormArray['baccount_which'] = activeTokenId;
+            break;
+    }
+}
+
+function setThePaymentType() {
+    $(document).find('.payment-type').val(whichPaymentTypeModal);
+}
+
+
+function showThisDialog($thisDialog) {
+    var $maxWidth = $thisDialog.find('.window-width').val();
+    $maxWidth = ($maxWidth > 0) ? $maxWidth : 500;
+    $thisDialogClone = $($thisDialog).clone();
+    $thisDialogClone.dialog({
+        position:   {my: "center", at: "center"},
+        modal:      true,
+        width:      $(window).width() > $maxWidth ? $maxWidth : $(window).width() * 0.9,
+        minWidth:   300,
+        maxHeight:  $(window).height() * 0.9,
+        draggable:  true
+    });
+    $('.ui-dialog-titlebar-close').remove();
+    // Datepicker.
+    $thisDialogClone.find('.time').timepicker({
+        'showDuration': true,
+        'timeFormat': 'g:ia'
+    });
+    $thisDialogClone.find('.date').datepicker({
+        'format': 'yyyy-m-d',
+        'autoclose': true
+    });
+
+    fillFormWithSubmission();
+
+    return $thisDialogClone;
+}
+
+function fillFormWithSubmission() {
+    if (Object.keys(paymentFormArray).length > 0) {
+        $thisDialogClone.find("[name='collector_id']").val(paymentFormArray['collector_id']);
+        $thisDialogClone.find("[name='splits']").val(paymentFormArray['splits']);
+        $thisDialogClone.find("[name='amount']").val(paymentFormArray['amount']);
+        $thisDialogClone.find("[name='run_time']").val(paymentFormArray['run_time']);
+        $thisDialogClone.find("[name='run_date']").val(paymentFormArray['run_date']);
+        $thisDialogClone.find("[name='card_which']").val(paymentFormArray['card_which']).attr('selected', 'selected');
+        $thisDialogClone.find("[name='baccount_which']").val(paymentFormArray['baccount_which']).attr('selected', 'selected');
+        $thisDialogClone.find("[name='baccount_name']").val(paymentFormArray['baccount_name']);
+        $thisDialogClone.find("[name='routing_number']").val(paymentFormArray['routing_number']);
+        $thisDialogClone.find("[name='baccount_number']").val(paymentFormArray['baccount_number']);
+    }
+}
+
+function successMessage(requestType) {
+    switch (requestType) {
+        case "add_payment":
+            toastr.success("Payment successfully added.");
+            break;
+        default:
+            break;
+    }
+}
+
+function highlight_account_form_error_fields($formObject, error_fields) {
+    for (var x = 0; x < error_fields.length; x++) {
+        $formObject.find('input[name=' + error_fields[x].input_name + ']').addClass('field_error');
+        $formObject.find('select[name=' + error_fields[x].input_name + ']').addClass('field_error');
+    }
+}
+
+function get_account_form_errors(error_fields) {
+    return "<p><span>An error has occurred.</span>" + formatted_error_fields(error_fields) + "</p>";
+}
+
+function formatted_error_fields(error_fields) {
+    var fields_message = "<hr>Please check these fields (below) for errors.<ul>";
+    for (var x = 0; x < error_fields.length; x++) {
+        fields_message += "<li>" + error_fields[x].readable + "</li>";
+    }
+    fields_message += "<ul>";
+    return fields_message;
+}
+
+function getFormFieldsAsObject($paymentFormObject) {
+
+    var formData = new Object;
+    $paymentFormObject.find(':input').each(function() {
+        formData[this.name] = this.value;
+    });
+    return formData;
+}
+
+function reloadPage() {
+    basicLeftHide();
+    basicRightHide();
+    hideTables();
+    handlebarHelpers();
+    loadTemplates();
+}
+
+function isJSON(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
+Handlebars.registerHelper("debug", function(optionalValue) {
+    console.log("Current Context");
+    console.log("====================");
+    console.log(this);
+
+    if (optionalValue) {
+        console.log("Value");
+        console.log("====================");
+        console.log(optionalValue);
+    }
+});

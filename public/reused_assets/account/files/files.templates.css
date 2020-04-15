@@ -1,0 +1,58 @@
+.view-templates-dialog .button-container {
+    float: left;
+}
+
+.templates-box {
+    width: 100%;
+    min-height: 5rem;
+    display: inline-block;
+}
+
+.template-box {
+    border: 1px solid #D0D0D0;
+    float: left;
+    width: 9.5rem;
+    height: 11rem;
+    margin: 1rem;
+    cursor: pointer;
+    text-align: center;
+    overflow: hidden;
+}
+
+.template-box:hover {
+    background: #D0D0D0;
+    overflow: visible;
+}
+
+.template-box .document-outline-dark {
+    background-size: 45px 45px !important;
+    width: 46px !important;
+    height: 47px !important;
+    margin: 2rem 3.5rem !important;
+}
+
+.template-box span {
+    float: left;
+    width: 9.5rem;
+    /*text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    word-break: break-all;*/
+}
+
+.template-box:hover span {
+    background: #D0D0D0;
+    /*width: 8.85rem;
+    overflow: visible;
+    white-space: normal;*/
+}
+
+#view-templates-dialog .icon-info-sign:first-of-type {
+    margin: 0rem 0.5rem 0rem 0rem;
+}
+
+#view-templates-dialog p:first-of-type {
+    margin: 0rem 0rem 1rem 0rem;
+    padding: 1rem 2rem 1rem 1rem;
+    border-bottom: 1px solid #D0D0D0;
+}
